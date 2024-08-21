@@ -22,9 +22,8 @@ jobs:
 
       # Installer les dépendances système
       - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          xargs -a system-requirements.txt sudo apt-get install -y
+        run: sudo apt-get update && sudo apt-get install -y libzbar0 libssl-dev build-essential
+
 
       # Installe Python et les dépendances du projet
       - name: Set up Python

@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 libzbar0
 libssl-dev
+=======
+libzbar0
+libssl-dev
+>>>>>>> 6360439ae8e5e9357f1541526d1881ff42feee2c
 build-essential

@@ -1,0 +1,133 @@
+# Nom du pipeline
+name: CI/CD back end pipeline
+
+# Se déclenche en cas de push ou d'une PR sur main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Les jobs sont des tâches qui sont exécutées dans le pipeline
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout du code du dépôt git dans la machine virtuelle
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Installer les dépendances système
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          xargs -a system-requirements.txt sudo apt-get install -y
+
+      # Installe Python et les dépendances du projet
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12.4'
+
+      - name: Install dependencies
+        run: |
+          # Créer un environnement virtuel
+          python -m venv venv
+          
+          # Activer l'environnement virtuel
+          source venv/bin/activate
+          
+          # Installer les dépendances
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Exécute une analyse statique avec Flake8 pour détecter des erreurs de style ou des bugs
+      - name: Lint code
+        run: |
+          source venv/bin/activate
+          pip install flake8
+          # Exclut le dossier venv de l'analyse
+          flake8 --exclude=venv
+      
+      # Permet de lancer les tests unitaires de l'application
+      - name: Run unit tests
+        run: |
+          source venv/bin/activate
+          pytest ./flaskProject_Pipeline/tests/unit
+
+      # Permet de lancer les tests d'intégrations de l'application
+      - name: Run integration tests
+        run: |
+          source venv/bin/activate
+          pytest ./flaskProject_Pipeline/tests/integration
+
+      # Permet de lancer les tests end to end
+      - name: Run E2E tests
+        run: |
+          source venv/bin/activate
+          pytest ./flaskProject_Pipeline/tests/e2e
+
+  # Déploiement en staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12.4'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to Staging
+        run: |
+          echo "Deploying to Staging environment..."
+
+      # Permet de lancer les tests d'intégrations de l'application en Staging
+      - name: Run integration tests on Staging
+        run: |
+          source venv/bin/activate
+          pytest ./flaskProject_Pipeline/tests/integration  
+
+  # Déploiement en production
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12.4'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to Production environment..."
+
+      # Permet de lancer les tests end to end de l'application en production
+      - name: Post-deployment tests
+        run: |
+          source venv/bin/activate
+          pytest ./flaskProject_Pipeline/tests/e2e

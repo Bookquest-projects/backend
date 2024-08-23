@@ -1,3 +1,0 @@
-libzbar0
-libssl-dev
-build-essential

@@ -1,7 +1,6 @@
 # Nom du pipeline
-name: CI/CD back end pipeline
+name: CI/CD Pipeline
 
-# Se déclenche en cas de push ou d'une PR sur main
 on:
   push:
     branches:
@@ -10,64 +9,53 @@ on:
     branches:
       - main
 
-# Les jobs sont des tâches qui sont exécutées dans le pipeline
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout du code du dépôt git dans la machine virtuelle
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Installer les dépendances système
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libzbar0 libssl-dev build-essential
-
-
-      # Installe Python et les dépendances du projet
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.12.4'
-
-      - name: Install dependencies
+      - name: Install Docker
         run: |
-          # Créer un environnement virtuel
-          python -m venv venv
-          
-          # Activer l'environnement virtuel
-          source venv/bin/activate
-          
-          # Installer les dépendances
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository \
+             "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+             $(lsb_release -cs) \
+             stable"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      # Changer de répertoire pour accéder au Dockerfile
+      - name: Change directory to Dockerfile location
+        run: cd ../../
 
-      # Exécute une analyse statique avec Flake8 pour détecter des erreurs de style ou des bugs
+      # Construire l'image Docker
+      - name: Build Docker image
+        run: docker build -t bookquest-backend:latest -f Dockerfile .
+
+      # Exécute une analyse statique avec Flake8
       - name: Lint code
-        run: |
-          source venv/bin/activate
-          pip install flake8
-          # Exclut le dossier venv de l'analyse
-          flake8 --exclude=venv
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest flake8 --exclude=venv
       
-      # Permet de lancer les tests unitaires de l'application
+      # Lancer les tests unitaires
       - name: Run unit tests
-        run: |
-          source venv/bin/activate
-          pytest ./flaskProject_Pipeline/tests/unit
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/unit
 
-      # Permet de lancer les tests d'intégrations de l'application
+      # Lancer les tests d'intégration
       - name: Run integration tests
-        run: |
-          source venv/bin/activate
-          pytest ./flaskProject_Pipeline/tests/integration
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/integration
 
-      # Permet de lancer les tests end to end
+      # Lancer les tests E2E
       - name: Run E2E tests
-        run: |
-          source venv/bin/activate
-          pytest ./flaskProject_Pipeline/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/e2e
 
   # Déploiement en staging
   deploy-staging:
@@ -78,27 +66,42 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository \
+             "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+             $(lsb_release -cs) \
+             stable"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
         with:
-          python-version: '3.12.4'
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Install dependencies
+      - name: Change directory to Dockerfile location
+        run: cd ../../
+
+      # Construire et pousser l'image Docker pour staging
+      - name: Build and push Docker image
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
+          docker build -t bookquest-backend:staging -f Dockerfile .
+          docker tag bookquest-backend:staging ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:staging
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:staging
       - name: Deploy to Staging
-        run: |
-          echo "Deploying to Staging environment..."
+        run: echo "Deploying to Staging environment..."
 
-      # Permet de lancer les tests d'intégrations de l'application en Staging
       - name: Run integration tests on Staging
-        run: |
-          source venv/bin/activate
-          pytest ./flaskProject_Pipeline/tests/integration  
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:staging pytest ./flaskProject_Pipeline/tests/integration  
 
   # Déploiement en production
   deploy-production:
@@ -109,24 +112,39 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            gnupg-agent \
+            software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository \
+             "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+             $(lsb_release -cs) \
+             stable"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
         with:
-          python-version: '3.12.4'
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Install dependencies
+      - name: Change directory to Dockerfile location
+        run: cd ../../
+
+      # Construire et pousser l'image Docker pour production
+      - name: Build and push Docker image
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
+          docker build -t bookquest-backend:production -f Dockerfile .
+          docker tag bookquest-backend:production ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:production
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:production
       - name: Deploy to Production
-        run: |
-          echo "Deploying to Production environment..."
+        run: echo "Deploying to Production environment..."
 
-      # Permet de lancer les tests end to end de l'application en production
       - name: Post-deployment tests
-        run: |
-          source venv/bin/activate
-          pytest ./flaskProject_Pipeline/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:production pytest ./flaskProject_Pipeline/tests/e2e

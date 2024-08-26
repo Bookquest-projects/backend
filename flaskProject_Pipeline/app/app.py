@@ -7,7 +7,7 @@ myInt = cv2.CV_16F
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!' + ' ' + str(myInt) + ' ' + str(cv2.BORDER_CONSTANT)
+    return 'Hello World!!' + ' ' + str(myInt) + ' ' + str(cv2.BORDER_CONSTANT)
 
 
 @app.route('/data')

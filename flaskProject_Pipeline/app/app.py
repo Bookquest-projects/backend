@@ -1,17 +1,27 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
+from app.BookRepository import BookRepository
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return "Hello, World!"
 
 
-@app.route('/data')
-def data():
-    return jsonify({"key": "value"})
+@app.route('/book', methods=['GET'])
+def get_book_by_isbn():
+    isbn = request.args.get('isbn')
+    if not isbn:
+        return jsonify({"error": "ISBN is required"}), 400
+
+    bookRepository = BookRepository()
+    book_info = bookRepository.FindBookByIsbn(isbn)
+    if not book_info:
+        return jsonify({"error": "Book not found"}), 404
+
+    return jsonify({"book_info": book_info})
 
 
 if __name__ == '__main__':

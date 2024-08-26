@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 
-from app.BookRepository import BookRepository
+from .BookRepository import BookRepository
 
 app = Flask(__name__)
 

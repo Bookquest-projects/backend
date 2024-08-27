@@ -1,8 +1,11 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+
 from BookRepository import BookRepository
 import cv2
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/')
@@ -13,6 +16,7 @@ def hello_world():
 @app.route('/book', methods=['GET'])
 def get_book_by_isbn():
     isbn = request.args.get('isbn')
+
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 

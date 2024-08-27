@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y libzbar0
 WORKDIR /app
 
 # Copie uniquement le fichier requirements.txt
-COPY requirements.txt .
+COPY requirements.txt /app
 
 # Installe les dépendances du projet
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie le reste des fichiers du projet dans le conteneur
-COPY flaskProject_Pipeline/ .
+COPY flaskProject_Pipeline/ /app
 
 # Expose le port 5000 (par défaut pour Flask)
 EXPOSE 5000

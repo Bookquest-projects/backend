@@ -17,7 +17,7 @@ COPY requirements.txt /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie uniquement le contenu du dossier app dans le conteneur
-COPY flaskProject_Pipeline/app /app
+COPY bookquest/app /app
 
 # Expose le port 5000 (par défaut pour Flask)
 EXPOSE 5000

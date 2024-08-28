@@ -1,19 +1,17 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-
-from BookRepository import BookRepository
 import cv2
+from flask import Blueprint, request, jsonify
 
-app = Flask(__name__)
-CORS(app)
+from bookquest.app.BookRepository import BookRepository
+
+books_bp = Blueprint('books', __name__)
 
 
-@app.route('/')
+@books_bp.route('/')
 def hello_world():
     return "Hello, World! " + str(cv2.CV_64F)
 
 
-@app.route('/book', methods=['GET'])
+@books_bp.route('/book', methods=['GET'])
 def get_book_by_isbn():
     isbn = request.args.get('isbn')
 
@@ -26,7 +24,3 @@ def get_book_by_isbn():
         return jsonify({"error": "Book not found"}), 404
 
     return jsonify({"book_info": book_info})
-
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)

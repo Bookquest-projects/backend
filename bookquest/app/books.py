@@ -1,7 +1,7 @@
 import cv2
 from flask import Blueprint, request, jsonify
 
-from bookquest.app.BookRepository import BookRepository
+from BookRepository import BookRepository
 
 books_bp = Blueprint('books', __name__)
 

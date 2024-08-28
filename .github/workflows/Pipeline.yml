@@ -47,15 +47,15 @@ jobs:
       
       # Lancer les tests unitaires
       - name: Run unit tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/unit
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit
 
       # Lancer les tests d'intégration
       - name: Run integration tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/integration
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/integration
 
       # Lancer les tests E2E
       - name: Run E2E tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./flaskProject_Pipeline/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/e2e
 
   # Déploiement en staging
   deploy-staging:
@@ -101,7 +101,7 @@ jobs:
         run: echo "Deploying to Staging environment..."
 
       - name: Run integration tests on Staging
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:staging pytest ./flaskProject_Pipeline/tests/integration  
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:staging pytest ./bookquest/tests/integration
 
   # Déploiement en production
   deploy-production:
@@ -147,4 +147,4 @@ jobs:
         run: echo "Deploying to Production environment..."
 
       - name: Post-deployment tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:production pytest ./flaskProject_Pipeline/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:production pytest ./bookquest/tests/e2e

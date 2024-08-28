@@ -14,3 +14,9 @@ To start the project, run:
 ```bash
 python bookquest/app/__init__.py
 ```
+
+## Linting
+To lint the project, run:
+```bash
+flake8 bookquest
+```

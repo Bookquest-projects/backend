@@ -6,10 +6,9 @@ class BookRepository:
 
     def findBookByIsbn(self, isbn):
         api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
-        isbn = isbn.strip()
 
         try:
-            resp = urlopen(api + isbn)
+            resp = urlopen(f"{api}{isbn}")
             book_data = json.load(resp)
 
             if 'items' not in book_data:

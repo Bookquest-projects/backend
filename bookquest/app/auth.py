@@ -1,37 +1,36 @@
-from argon2 import PasswordHasher
-from argon2.exceptions import VerifyMismatchError
+from db import DatabaseManager
+from UserManager import UserManager
+from flask import request, jsonify, Blueprint
+
+auth_bp = Blueprint('auth', __name__)
+database = DatabaseManager('host', 'user', 'password', 'database')
+user_manager = UserManager(database)
 
 
-class UserManager:
+@auth_bp.route('/user', methods=['POST'])
+def create_user():
+    data = request.json
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Missing 'username' or 'password'"}), 400
 
-    def __init__(self, db_manager):
-        self.db_manager = db_manager
-        self.ph = PasswordHasher()
+    try:
+        user_manager.create_user(data['username'], data['password'])
+        return jsonify({"message": "User created successfully."}), 201
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify(
+            {"error": "An error occurred during user creation."}), 500
 
-    def __hash_password(self, password):
-        return self.ph.hash(password)
 
-    # Si on doit vérifier un password quand un user se connecte
-    def __verify_password(self, hashed_password, password):
-        try:
-            return self.ph.verify(hashed_password, password)
-        except VerifyMismatchError:
-            return False
+@auth_bp.route('/user/verify', methods=['POST'])
+def verify_user():
+    data = request.json
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Missing 'username' or 'password'"}), 400
 
-    def __is_email_taken(self, email):
-        # Configurer la data source ?
-        query = "SELECT COUNT(*) FROM users WHERE email = %s"
-        result = self.db_manager.execute_select(query, (email,))
-        return result[0][0] > 0
-
-    def create_user(self, username, email, password):
-        if self.__is_email_taken(email):
-            raise ValueError("Email already used.")
-
-        hashed_password = self.__hash_password(password)
-        # Configurer la data source ?
-        query = ("INSERT INTO users (username,"
-                 "email,"
-                 "password) VALUES (%s, %s, %s)")
-        self.db_manager.execute_insert(query,
-                                       (username, email, hashed_password))
+    is_valid = user_manager.verify_user(data['username'], data['password'])
+    if is_valid:
+        return jsonify({"message": "User verified successfully."}), 200
+    else:
+        return jsonify({"error": "Invalid username or password."}), 401

@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify
 from BookRepository import BookRepository
 
 books_bp = Blueprint('books', __name__)
+user_manager = UserManager('''new databaseManager''')
 
 
 @books_bp.route('/')
@@ -24,3 +25,8 @@ def get_book_by_isbn():
         return jsonify({"error": "Book not found"}), 404
 
     return jsonify({"book_info": book_info})
+
+
+@books_bp.route('/user', methods=['GET'])
+def get_user_information():
+    user_manager.create_user('username', 'email', 'password')

@@ -11,7 +11,7 @@ def hello_world():
     return "Hello, World! " + str(cv2.CV_64F)
 
 
-@books_bp.route('/books/<int:isbn>')
+@books_bp.route('/books/<string:isbn>', methods=['GET'])
 def get_book_by_isbn(isbn):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400

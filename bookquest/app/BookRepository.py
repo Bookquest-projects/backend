@@ -57,9 +57,9 @@ class BookRepository:
                 "publisher": publisher,
                 "published_date": published_date,
                 "description": description,
-                "authors": authors, # list
+                "authors": authors,  # list
                 "page_count": page_count,
-                "categories": categories, # list
+                "categories": categories,  # list
                 "average_rating": average_rating,
                 "ratings_count": ratings_count,
                 "isbn_10": isbn_10,

@@ -3,6 +3,7 @@ FROM python:3.11-slim
 
 # Installer les dépendances système
 RUN apt-get update && apt-get install -y \
+	pkg-config \
     libzbar0 \
     libgl1 \
     libglib2.0-0

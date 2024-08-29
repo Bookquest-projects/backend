@@ -7,6 +7,7 @@ class BookRepository:
     def findBookByIsbn(self, isbn: str):
         api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
         isbn.strip()
+        infos = {}
         try:
             resp = urlopen(f"{api}{isbn}")
             book_data = json.load(resp)
@@ -39,38 +40,34 @@ class BookRepository:
                          .get("buyLink", "N/A"))
             content_version = volume_info.get("contentVersion", "N/A")
 
-            identifier_strings = []
+            isbn_10 = ""
+            isbn_13 = ""
             for identifier in identifiers:
-                type = identifier.get('type', 'N/A')
                 id_value = identifier.get('identifier', 'N/A')
-                identifier_strings.append(f"{type}: {id_value}")
-            identifiers_str = ', '.join(identifier_strings)
+                if len(id_value) == 10:
+                    isbn_10 = id_value
+                elif len(id_value) == 13:
+                    isbn_13 = id_value
 
-            info = {
+            infos = {
                 "title": title,
                 "subtitle": subtitle,
-                "authors": authors,
                 "publisher": publisher,
                 "published_date": published_date,
                 "description": description,
-                "identifiers": identifiers_str,
+                "authors": authors, # list
                 "page_count": page_count,
-                "categories": categories,
+                "categories": categories, # list
                 "average_rating": average_rating,
                 "ratings_count": ratings_count,
-                "language": language,
+                "isbn_10": isbn_10,
+                "isbn_13": isbn_13,
                 "image_link": image_link,
-                "preview_link": preview_link,
-                "info_link": info_link,
-                "print_type": print_type,
-                "maturity_rating": maturity_rating,
-                "access_info": access_info,
-                "sale_info": sale_info,
-                "content_version": content_version
+                "language": language
             }
 
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
 
-        return info
+        return infos

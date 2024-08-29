@@ -20,7 +20,7 @@ def create_user():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         return jsonify(
-            {"error": "An error occurred during user creation."}), 500
+            {"error": str(e)}), 500
 
 
 @auth_bp.route('/user/verify', methods=['POST'])

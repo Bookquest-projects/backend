@@ -6,7 +6,7 @@ from BookRepository import BookRepository
 from ocr import OCR
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/images'  # TODO
+UPLOAD_FOLDER = '../images'  # TODO
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
 
 books_bp = Blueprint('books', __name__)

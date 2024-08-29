@@ -23,4 +23,4 @@ COPY bookquest/app /app
 EXPOSE 5000
 
 # Commande pour lancer l'application
-CMD ["python", "app.py"]
+CMD ["python", "__init__.py"]

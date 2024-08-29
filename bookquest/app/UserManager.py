@@ -34,7 +34,7 @@ class UserManager:
         query = ("INSERT INTO users (username, password, salt) "
                  "VALUES (%s, %s, %s)")
         self.db_manager.execute_insert(query, (
-        username, hashed_password, salt.hex()))
+            username, hashed_password, salt.hex()))
 
     def verify_user(self, username, password):
         query = "SELECT password, salt FROM users WHERE username = %s"

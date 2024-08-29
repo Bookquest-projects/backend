@@ -4,12 +4,11 @@ from urllib.request import urlopen
 
 class BookRepository:
 
-    def findBookByIsbn(self, isbn):
+    def findBookByIsbn(self, isbn: str):
         api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
-        isbn = isbn.strip()
-
+        isbn.strip()
         try:
-            resp = urlopen(api + isbn)
+            resp = urlopen(f"{api}{isbn}")
             book_data = json.load(resp)
 
             if 'items' not in book_data:

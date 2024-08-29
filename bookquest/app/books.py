@@ -11,10 +11,8 @@ def hello_world():
     return "Hello, World! " + str(cv2.CV_64F)
 
 
-@books_bp.route('/book', methods=['GET'])
-def get_book_by_isbn():
-    isbn = request.args.get('isbn')
-
+@books_bp.route('/books/<string:isbn>', methods=['GET'])
+def get_book_by_isbn(isbn):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
@@ -24,3 +22,19 @@ def get_book_by_isbn():
         return jsonify({"error": "Book not found"}), 404
 
     return jsonify({"book_info": book_info})
+
+
+@books_bp.route('/books/scan', methods=['POST'])
+def scan_book():
+    image = request.files['image']
+
+    # save the image in /app
+    image.save('image.jpg')
+
+    if not image:
+        return jsonify({"error": "Image is required"}), 400
+
+    # TODO OCR
+
+    # TODO return book
+    return jsonify({}, 200)

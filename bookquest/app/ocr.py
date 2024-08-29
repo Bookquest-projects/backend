@@ -32,7 +32,8 @@ class OCR:
 
         if not detectedBarcodes:
             print(
-                "DEBUG Barcode Not Detected or your barcode is blank/corrupted!")  # debug
+                "DEBUG Barcode Not Detected or "
+                "your barcode is blank/corrupted!")  # debug
             return None
         else:
             for barcode in detectedBarcodes:

@@ -20,7 +20,7 @@ jobs:
       - name: Run linting
         run: |
           pip install flake8
-          flake8 bookquest\app --exclude=venv
+          flake8 bookquest/app --exclude=venv
 
       - name: Install Docker
         run: |

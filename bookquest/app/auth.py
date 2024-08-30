@@ -9,7 +9,6 @@ auth_bp = Blueprint('auth', __name__)
 def login():
     user_request = request.get_json()
     username = user_request.get('username')
-    password = user_request.get('password')
 
     # TODO check if user exists in DB + password
     if True:
@@ -27,7 +26,7 @@ def login():
 def register():
     user_request = request.get_json()
     username = user_request.get('username')
-    password = user_request.get('password')
+
     # TODO check if user does not exist in DB or duplicate
     if True:
         return jsonify({"msg": "User already exists"}), 409

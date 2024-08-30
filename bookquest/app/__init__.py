@@ -5,7 +5,7 @@ from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
-from bookquest.app.auth_api import auth_bp
+from bookquest.app.auth import auth_bp
 from bookquest.app.books import books_bp
 
 app = Flask(__name__)

@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS `bookshelf`;
 --
 CREATE TABLE `author` (
     `id_author` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(45) NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
     `description` TEXT,
     PRIMARY KEY (`id_author`),
     UNIQUE KEY `id_author_UNIQUE` (`id_author`),
@@ -39,7 +39,7 @@ CREATE TABLE `bookshelf` (
 --
 CREATE TABLE `publisher` (
     `id_publisher` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(45) NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
     `previous_id` INT UNSIGNED DEFAULT 0,
     PRIMARY KEY (`id_publisher`),
     UNIQUE KEY `id_publisher_UNIQUE` (`id_publisher`),
@@ -51,7 +51,7 @@ CREATE TABLE `publisher` (
 --
 CREATE TABLE `serie` (
     `id_serie` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `original_name` VARCHAR(45) NOT NULL,
+    `original_name` VARCHAR(100) NOT NULL,
     PRIMARY KEY (`id_serie`),
     UNIQUE KEY `id_serie_UNIQUE` (`id_serie`)
 );
@@ -62,7 +62,7 @@ CREATE TABLE `serie` (
 CREATE TABLE `user` (
     `id_user` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(45) NOT NULL,
-    `email` VARCHAR(45) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
     `password` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`id_user`),
     UNIQUE KEY `email_UNIQUE` (`email`),
@@ -74,7 +74,7 @@ CREATE TABLE `user` (
 --
 CREATE TABLE `work` (
     `id_work` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `original_title` VARCHAR(255) NOT NULL,
+    `original_title` VARCHAR(100) NOT NULL,
     `fk_serie` INT UNSIGNED DEFAULT NULL,
     PRIMARY KEY (`id_work`),
     UNIQUE KEY `id_work_UNIQUE` (`id_work`),
@@ -86,13 +86,13 @@ CREATE TABLE `work` (
 --
 CREATE TABLE `book` (
     `id_book` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `ISBN_10` INT UNSIGNED NOT NULL,
-    `ISBN_13` INT UNSIGNED NOT NULL,
-    `title` VARCHAR(45) NOT NULL,
-    `lang` VARCHAR(2) NOT NULL,
+    `ISBN_10` VARCHAR(10) DEFAULT "",
+    `ISBN_13` VARCHAR(13) DEFAULT "",
+    `title` VARCHAR(100) NOT NULL,
+    `lang` VARCHAR(3) NOT NULL,
     `page_count` SMALLINT UNSIGNED NOT NULL,
     `volume_number` TINYINT UNSIGNED DEFAULT NULL,
-    `publication_DATE` DATE DEFAULT NULL,
+    `publication_date` DATE DEFAULT NULL,
     `summary` TEXT,
     `fk_publisher` INT UNSIGNED DEFAULT NULL,
     `fk_work` INT UNSIGNED DEFAULT NULL,
@@ -111,10 +111,10 @@ CREATE TABLE `book` (
 CREATE TABLE `review` (
     `id_review` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `ratings` TINYINT DEFAULT NULL,
-    `favorite` TINYINT UNSIGNED DEFAULT NULL,
-    `owned` TINYINT UNSIGNED DEFAULT NULL,
-    `reading_DATE` DATE DEFAULT NULL,
-    `reading_number` TINYINT DEFAULT NULL,
+    `favorite` BOOLEAN DEFAULT NULL,
+    `owned` BOOLEAN DEFAULT NULL,
+    `reading_date` DATE DEFAULT NULL,
+    `reading_number` TINYINT DEFAULT 0,
     `comment` TEXT,
     `fk_user` INT UNSIGNED DEFAULT NULL,
     `fk_book` INT UNSIGNED DEFAULT NULL,
@@ -130,14 +130,14 @@ CREATE TABLE `review` (
 );
 
 --
--- Table structure for table `auhtor_work`
+-- Table structure for table `author_work`
 --
-CREATE TABLE `auhtor_work` (
+CREATE TABLE `author_work` (
     `fk_author` INT UNSIGNED NOT NULL,
     `fk_work` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`fk_work` , `fk_author`),
-    CONSTRAINT `auhtor_work_fk_work_idx` FOREIGN KEY (`fk_work`)
+    CONSTRAINT `author_work_fk_work_idx` FOREIGN KEY (`fk_work`)
         REFERENCES `work` (`id_work`),
-    CONSTRAINT `auhtor_work_fk_auhtor_idx` FOREIGN KEY (`fk_author`)
+    CONSTRAINT `author_work_fk_author_idx` FOREIGN KEY (`fk_author`)
         REFERENCES `author` (`id_author`)
 );

@@ -17,6 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Run linting
+        run: |
+          pip install flake8
+          flake8 bookquest\app --exclude=venv
+
       - name: Install Docker
         run: |
           sudo apt-get update
@@ -41,10 +46,6 @@ jobs:
       - name: Build Docker image
         run: docker build -t bookquest-backend:latest -f Dockerfile .
 
-      # Exécute une analyse statique avec Flake8
-      - name: Lint code
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest flake8 --exclude=venv
-      
       # Lancer les tests unitaires
       - name: Run unit tests
         run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit

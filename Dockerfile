@@ -3,9 +3,13 @@ FROM python:3.11-slim
 
 # Installer les dépendances système
 RUN apt-get update && apt-get install -y \
+    pkg-config \
     libzbar0 \
     libgl1 \
-    libglib2.0-0
+    libglib2.0-0 \
+    default-libmysqlclient-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
 # Définit le répertoire de travail dans le conteneur
 WORKDIR /app

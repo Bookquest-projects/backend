@@ -1,46 +1,38 @@
-import os
+from app import db
+from UserModel import User
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
 
 
 class UserManager:
 
-    def __init__(self, db_manager):
-        self.db_manager = db_manager
+    def __init__(self):
         self.ph = PasswordHasher()
 
-    def __hash_password(self, password, salt=None):
-        if not salt:
-            salt = os.urandom(16)
-        return self.ph.hash(password, salt.hex())
+    def __hash_password(self, password):
+        return self.ph.hash(password)
 
-    def __verify_password(self, hashed_password, password, salt):
+    def __verify_password(self, hashed_password, password):
         try:
-            return self.ph.verify(hashed_password, password + salt.hex())
+            return self.ph.verify(hashed_password, password)
         except (VerifyMismatchError, VerificationError):
             return False
 
-    def __is_username_taken(self, username):
-        query = "SELECT COUNT(*) FROM users WHERE username = %s"
-        result = self.db_manager.execute_select(query, (username,))
-        return result[0][0] > 0
-
     def create_user(self, username, password):
-        if self.__is_username_taken(username):
+        normalized_username = username.strip().lower()
+
+        if User.query.filter_by(username=normalized_username).first():
             raise ValueError("Username already used.")
 
-        salt = os.urandom(16)
-        hashed_password = self.__hash_password(password, salt)
-        query = ("INSERT INTO users (username, password, salt) "
-                 "VALUES (%s, %s, %s)")
-        self.db_manager.execute_insert(query, (
-            username, hashed_password, salt.hex()))
+        hashed_password = self.__hash_password(password)
+        new_user = User(username=normalized_username,
+                        password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
 
     def verify_user(self, username, password):
-        query = "SELECT password, salt FROM users WHERE username = %s"
-        result = self.db_manager.execute_select(query, (username,))
-        if result:
-            hashed_password, salt = result[0]
-            return self.__verify_password(hashed_password, password,
-                                          bytes.fromhex(salt))
+        normalized_username = username.strip().lower()
+        user = User.query.filter_by(username=normalized_username).first()
+        if user and self.__verify_password(user.password, password):
+            return True
         return False

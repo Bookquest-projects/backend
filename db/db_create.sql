@@ -62,10 +62,8 @@ CREATE TABLE `serie` (
 CREATE TABLE `user` (
     `id_user` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(45) NOT NULL,
-    `email` VARCHAR(100) NOT NULL,
     `password` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`id_user`),
-    UNIQUE KEY `email_UNIQUE` (`email`),
     UNIQUE KEY `id_user_UNIQUE` (`id_user`)
 );
 

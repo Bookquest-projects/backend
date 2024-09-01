@@ -7,9 +7,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 class KeywordGenerator:
     def __init__(self, language_model="fr_core_news_sm"):
         self.nlp = spacy.load(language_model)
+        self.top_n = 10
+        self.use_mmr = True
+        self.diversity = 0.3
+        self.use_maxsum = True
 
-    def get_keyword(self, summary, top_n=10, stop_words=None,
-                    use_mmr=False, diversity=0.7, use_maxsum=False):
+    def get_keyword(self, summary, stop_words=None):
         try:
             doc = self.nlp(summary)
 
@@ -23,20 +26,22 @@ class KeywordGenerator:
                           token.lower() not in stop_words]
 
             counter = Counter(tokens)
-            candidates = [kw for kw, _ in counter.most_common(top_n * 2)]
+            candidates = [kw for kw, _ in
+                          counter.most_common(self.top_n * 2)]
 
             candidate_embeddings = np.array(
                 [self.nlp(kw).vector for kw in candidates])
 
-            if use_maxsum:
+            if self.use_maxsum:
                 return self._max_sum_sim(candidates, candidate_embeddings,
-                                         top_n)
+                                         self.top_n)
 
-            if use_mmr:
-                return self._mmr(candidates, candidate_embeddings, top_n,
-                                 diversity)
+            if self.use_mmr:
+                return self._mmr(candidates, candidate_embeddings,
+                                 self.top_n,
+                                 self.diversity)
 
-            return candidates[:top_n]
+            return candidates[:self.top_n]
 
         except Exception as e:
             print(f"Keyword generation failed: {e}")

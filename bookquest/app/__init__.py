@@ -50,10 +50,5 @@ if __name__ == "__main__":
     ]
 
     generator = KeywordGenerator()
-    keywords = generator.get_keyword(summary,
-                                     top_n=10,
-                                     stop_words=stop_words_french,
-                                     use_mmr=True,
-                                     diversity=0.3,
-                                     use_maxsum=True)
+    keywords = generator.get_keyword(summary, stop_words_french)
     print("Keywords:", keywords)

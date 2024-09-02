@@ -53,12 +53,12 @@ class KeywordGenerator:
 
             if self.__use_maxsum:
                 return self.__max_sum_sim(candidates, candidate_embeddings,
-                                         self.__top_n)
+                                          self.__top_n)
 
             if self.__use_mmr:
                 return self.__mmr(candidates, candidate_embeddings,
-                                 self.__top_n,
-                                 self.__diversity)
+                                  self.__top_n,
+                                  self.__diversity)
 
             return candidates[:self.__top_n]
 

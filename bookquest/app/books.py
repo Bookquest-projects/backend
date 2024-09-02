@@ -1,7 +1,7 @@
 import os
 
 import cv2
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
 from werkzeug.utils import secure_filename
 
 from bookRepository import BookRepository

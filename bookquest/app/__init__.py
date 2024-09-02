@@ -4,7 +4,6 @@ from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from keywordGenerator import KeywordGenerator
 
 app = Flask(__name__)
 CORS(

@@ -4,13 +4,12 @@ import cv2
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
-from BookRepository import BookRepository
+from bookRepository import BookRepository
 from ocr import OCR
+from app import books_bp
 
 UPLOAD_FOLDER = '../images'  # TODO
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
-
-books_bp = Blueprint('books', __name__)
 
 
 @books_bp.route('/')
@@ -22,18 +21,8 @@ def hello_world():
 def get_book_by_isbn(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
-
-    ocr = OCR()
-    isbn_cleaned = ocr.clean_isbn(isbn)
-    bookRepository = BookRepository()
-    if ocr.is_valid_code(isbn_cleaned):
-        book_info = bookRepository.findBookByIsbn(isbn_cleaned)
-        if not book_info:
-            return jsonify({"error": "Book not found"}), 404
-
-        return jsonify(book_info), 200
     else:
-        return jsonify({"error": "Not a valid ISBN"}), 400
+        return __checkIsbnAndGetBookInfo(isbn)
 
 
 @books_bp.route('/books/scan', methods=['POST'])
@@ -71,4 +60,18 @@ def scan_book():
         if len(isbns) == 0:
             return jsonify({"error": "No valid ISBN in picture"}), 400
 
-    return get_book_by_isbn(isbns[0])
+    return __checkIsbnAndGetBookInfo(isbns[0])
+
+
+def __checkIsbnAndGetBookInfo(isbn):
+    ocr = OCR()
+    isbn_cleaned = ocr.clean_isbn(isbn)
+    bookRepository = BookRepository()
+    if ocr.is_valid_code(isbn_cleaned):
+        book_info = bookRepository.findBookByIsbn(isbn_cleaned)
+        if not book_info:
+            return jsonify({"error": "Book not found"}), 404
+
+        return jsonify(book_info), 200
+    else:
+        return jsonify({"error": "Not a valid ISBN"}), 400

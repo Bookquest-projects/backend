@@ -1,5 +1,4 @@
-from app import db
-from UserModel import User
+from userModel import User
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
 
@@ -27,6 +26,8 @@ class UserManager:
         hashed_password = self.__hash_password(password)
         new_user = User(username=normalized_username,
                         password=hashed_password)
+
+        from app import db
         db.session.add(new_user)
         db.session.commit()
 

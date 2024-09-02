@@ -8,31 +8,33 @@ from langdetect import detect
 
 class KeywordGenerator:
     def __init__(self, language_model="fr_core_news_sm"):
-        self.nlp = spacy.load(language_model)
-        self.top_n = 10
-        self.use_mmr = True
-        self.diversity = 0.3
-        self.use_maxsum = True
+        self.__nlp = spacy.load(language_model)
+        self.__top_n = 10
+        self.__use_mmr = True
+        self.__diversity = 0.3
+        self.__use_maxsum = True
 
         import nltk
         nltk.download('stopwords')
 
-        self.stopwords_french = set(stopwords.words('french'))
-        self.stopwords_english = set(stopwords.words('english'))
+        self.__stopwords_french = set(stopwords.words('french'))
+        self.__stopwords_english = set(stopwords.words('english'))
 
-    def _get_stopwords(self, text):
+    def __get_stopwords(self, text):
         lang = detect(text)
         if lang == 'fr':
-            return self.stopwords_french
+            print("frrrr")
+            return self.__stopwords_french
         elif lang == 'en':
-            return self.stopwords_english
+            print("ennnnnn")
+            return self.__stopwords_english
         else:
             return set()
 
     def get_keyword(self, summary):
         try:
-            stop_words = self._get_stopwords(summary)
-            doc = self.nlp(summary)
+            stop_words = self.__get_stopwords(summary)
+            doc = self.__nlp(summary)
 
             tokens = [token.lemma_ for token in doc if
                       not token.is_stop and
@@ -44,27 +46,27 @@ class KeywordGenerator:
 
             counter = Counter(tokens)
             candidates = [kw for kw, _ in
-                          counter.most_common(self.top_n * 2)]
+                          counter.most_common(self.__top_n * 2)]
 
             candidate_embeddings = np.array(
-                [self.nlp(kw).vector for kw in candidates])
+                [self.__nlp(kw).vector for kw in candidates])
 
-            if self.use_maxsum:
-                return self._max_sum_sim(candidates, candidate_embeddings,
-                                         self.top_n)
+            if self.__use_maxsum:
+                return self.__max_sum_sim(candidates, candidate_embeddings,
+                                         self.__top_n)
 
-            if self.use_mmr:
-                return self._mmr(candidates, candidate_embeddings,
-                                 self.top_n,
-                                 self.diversity)
+            if self.__use_mmr:
+                return self.__mmr(candidates, candidate_embeddings,
+                                 self.__top_n,
+                                 self.__diversity)
 
-            return candidates[:self.top_n]
+            return candidates[:self.__top_n]
 
         except Exception as e:
             print(f"Keyword generation failed: {e}")
             return []
 
-    def _max_sum_sim(self, candidates, candidate_embeddings, top_n):
+    def __max_sum_sim(self, candidates, candidate_embeddings, top_n):
         distances = cosine_similarity(candidate_embeddings,
                                       candidate_embeddings)
 
@@ -86,7 +88,7 @@ class KeywordGenerator:
 
         return [candidates[i] for i in selected_indices]
 
-    def _mmr(self, candidates, candidate_embeddings, top_n, diversity):
+    def __mmr(self, candidates, candidate_embeddings, top_n, diversity):
         doc_embedding = np.mean(candidate_embeddings, axis=0).reshape(1,
                                                                       -1)
         word_doc_similarity = cosine_similarity(candidate_embeddings,

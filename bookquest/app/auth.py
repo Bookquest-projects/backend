@@ -1,9 +1,9 @@
-from UserManager import UserManager
-from flask import Blueprint, jsonify, request
+from userManager import UserManager
+from flask import jsonify, request
+from app import auth_bp
 from flask_jwt_extended import jwt_required, create_access_token, \
     set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 
-auth_bp = Blueprint('auth', __name__)
 user_manager = UserManager()
 
 

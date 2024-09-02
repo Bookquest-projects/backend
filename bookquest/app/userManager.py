@@ -1,16 +1,16 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
-<<<<<<< HEAD
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
-=======
-from flask_sqlalchemy import SQLAlchemy
->>>>>>> c6fca4113377df4fb9dfcb688d6135bc4435aaec
+
+import app
 
 
 class UserManager:
 
     def __init__(self):
+        self.db = SQLAlchemy(app.app)
         self.ph = PasswordHasher()
 
     def __hash_password(self, password):
@@ -25,13 +25,10 @@ class UserManager:
     def create_user(self, username, password):
         normalized_username = username.strip().lower()
 
-<<<<<<< HEAD
-        from app import db
-
         try:
             existing_user_query = text(
                 "SELECT * FROM [user] WHERE username = :username")
-            existing_user = db.session.execute(
+            existing_user = self.db.session.execute(
                 existing_user_query,
                 {'username': normalized_username}).fetchone()
             if existing_user:
@@ -43,37 +40,23 @@ class UserManager:
                 INSERT INTO [user] (username, password)
                 VALUES (:username, :password)
             """)
-            db.session.execute(insert_query, {
+            self.db.session.execute(insert_query, {
                 'username': normalized_username,
                 'password': hashed_password
             })
-            db.session.commit()
+            self.db.session.commit()
 
         except SQLAlchemyError as e:
-            db.session.rollback()
+            self.db.session.rollback()
             raise RuntimeError(f"Database error occurred: {str(e)}")
-=======
-        if User.query.filter_by(username=normalized_username).first():
-            raise ValueError("Username already used.")
-
-        hashed_password = self.__hash_password(password)
-        new_user = User(username=normalized_username,
-                        password=hashed_password)
-
-        db = SQLAlchemy()
-        db.session.add(new_user)
-        db.session.commit()
->>>>>>> c6fca4113377df4fb9dfcb688d6135bc4435aaec
 
     def verify_user(self, username, password):
         normalized_username = username.strip().lower()
 
-        from app import db
-
         try:
             user_query = text(
                 "SELECT password FROM [user] WHERE username = :username")
-            user = db.session.execute(
+            user = self.db.session.execute(
                 user_query, {'username': normalized_username}).fetchone()
 
             if user and self.__verify_password(user.password, password):

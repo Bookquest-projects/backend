@@ -1,13 +1,11 @@
 import os
-<<<<<<< HEAD
-=======
-
 import sqlalchemy
->>>>>>> c6fca4113377df4fb9dfcb688d6135bc4435aaec
+
 from flask import Flask
 from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
 
 def create_app():

@@ -1,9 +1,11 @@
 import os
-from flask import Flask, Blueprint
+from flask import Flask, jsonify
 from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
+from books import books_bp
+from auth import auth_bp
 
 app = Flask(__name__)
 CORS(
@@ -16,14 +18,11 @@ CORS(
 load_dotenv()
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")  # TODO
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
-
-auth_bp = Blueprint('auth', __name__)
-books_bp = Blueprint('books', __name__)
 
 app.register_blueprint(books_bp)
 app.register_blueprint(auth_bp)

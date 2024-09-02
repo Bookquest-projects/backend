@@ -1,7 +1,11 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
+<<<<<<< HEAD
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+=======
+from flask_sqlalchemy import SQLAlchemy
+>>>>>>> c6fca4113377df4fb9dfcb688d6135bc4435aaec
 
 
 class UserManager:
@@ -21,6 +25,7 @@ class UserManager:
     def create_user(self, username, password):
         normalized_username = username.strip().lower()
 
+<<<<<<< HEAD
         from app import db
 
         try:
@@ -47,6 +52,18 @@ class UserManager:
         except SQLAlchemyError as e:
             db.session.rollback()
             raise RuntimeError(f"Database error occurred: {str(e)}")
+=======
+        if User.query.filter_by(username=normalized_username).first():
+            raise ValueError("Username already used.")
+
+        hashed_password = self.__hash_password(password)
+        new_user = User(username=normalized_username,
+                        password=hashed_password)
+
+        db = SQLAlchemy()
+        db.session.add(new_user)
+        db.session.commit()
+>>>>>>> c6fca4113377df4fb9dfcb688d6135bc4435aaec
 
     def verify_user(self, username, password):
         normalized_username = username.strip().lower()

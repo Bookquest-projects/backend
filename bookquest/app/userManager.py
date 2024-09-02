@@ -1,6 +1,6 @@
-from userModel import User
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
+from flask_sqlalchemy import SQLAlchemy
 
 
 class UserManager:
@@ -27,7 +27,7 @@ class UserManager:
         new_user = User(username=normalized_username,
                         password=hashed_password)
 
-        from app import db
+        db = SQLAlchemy()
         db.session.add(new_user)
         db.session.commit()
 

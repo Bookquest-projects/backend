@@ -1,31 +1,43 @@
 import os
-from flask import Flask, jsonify
+
+import sqlalchemy
+from flask import Flask
 from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_sqlalchemy import SQLAlchemy
-from books import books_bp
-from auth import auth_bp
 
-app = Flask(__name__)
-CORS(
-    app,
-    origins='http://localhost:5173',
-    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    supports_credentials=True
-)
 
-load_dotenv()
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+def create_app():
+    from auth import auth_bp
+    from books import books_bp
+    app = Flask(__name__)
+    CORS(
+        app,
+        origins='http://localhost:5173',
+        methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        supports_credentials=True
+    )
 
-db = SQLAlchemy(app)
-jwt = JWTManager(app)
+    load_dotenv()
+    # JWT Configuration
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 
-app.register_blueprint(books_bp)
-app.register_blueprint(auth_bp)
+    # DB Configuration
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URI")
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    app.register_blueprint(books_bp)
+    app.register_blueprint(auth_bp)
+    jwt = JWTManager(app)
+
+    return app
+
 
 if __name__ == '__main__':
+    app = create_app()
+    engine = sqlalchemy.create_engine(
+        os.getenv("DATABASE_URI")
+    )
+
     app.run(host="0.0.0.0", port=5000)

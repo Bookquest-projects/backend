@@ -1,3 +1,4 @@
+
 # Nom du pipeline
 name: CI/CD Pipeline
 
@@ -48,32 +49,16 @@ jobs:
 
       # Lancer les tests unitaires
       - name: Run unit tests
-        run: |
-          docker run --rm -v $(pwd):/app -w /app \
-          bookquest-backend:latest pytest ./bookquest/tests/unit
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit
 
       # Lancer les tests d'intégration
       - name: Run integration tests
-        run: |
-          docker run --rm -v $(pwd):/app -w /app \
-          -e PYTHONPATH=/app/bookquest \
-          -e DB_USER=${{ secrets.DB_USER }} \
-          -e DB_PASS=${{ secrets.DB_PASS }} \
-          -e DB_HOST=${{ secrets.DB_HOST }} \
-          -e DB_NAME=${{ secrets.DB_NAME }} \
-          bookquest-backend:latest pytest ./bookquest/tests/integration
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/integration
 
       # Lancer les tests E2E
       - name: Run E2E tests
-        run: |
-          docker run --rm -v $(pwd):/app -w /app \
-          -e PYTHONPATH=/app/bookquest \
-          -e DB_USER=${{ secrets.DB_USER }} \
-          -e DB_PASS=${{ secrets.DB_PASS }} \
-          -e DB_HOST=${{ secrets.DB_HOST }} \
-          -e DB_NAME=${{ secrets.DB_NAME }} \
-          bookquest-backend:latest pytest ./bookquest/tests/e2e
-          
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/e2e
+
   # Déploiement en staging
   deploy-staging:
     runs-on: ubuntu-latest
@@ -117,17 +102,9 @@ jobs:
       - name: Deploy to Staging
         run: echo "Deploying to Staging environment..."
 
-      # Lancer les tests d'intégrations
       - name: Run integration tests on Staging
-        run: |
-          docker run --rm -v $(pwd):/app -w /app \
-          -e PYTHONPATH=/app/bookquest \
-          -e DB_USER=${{ secrets.DB_USER }} \
-          -e DB_PASS=${{ secrets.DB_PASS }} \
-          -e DB_HOST=${{ secrets.DB_HOST }} \
-          -e DB_NAME=${{ secrets.DB_NAME }} \
-          bookquest-backend:latest pytest ./bookquest/tests/integration
-          
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:staging pytest ./bookquest/tests/integration
+
   # Déploiement en production
   deploy-production:
     runs-on: ubuntu-latest
@@ -171,13 +148,5 @@ jobs:
       - name: Deploy to Production
         run: echo "Deploying to Production environment..."
 
-      # Lancer les tests end to end
       - name: Post-deployment tests
-        run: |
-          docker run --rm -v $(pwd):/app -w /app \
-          -e PYTHONPATH=/app/bookquest \
-          -e DB_USER=${{ secrets.DB_USER }} \
-          -e DB_PASS=${{ secrets.DB_PASS }} \
-          -e DB_HOST=${{ secrets.DB_HOST }} \
-          -e DB_NAME=${{ secrets.DB_NAME }} \
-          bookquest-backend:latest pytest ./bookquest/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:production pytest ./bookquest/tests/e2e

@@ -4,13 +4,10 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, create_access_token, \
     set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 
-auth_bp = Blueprint('auth', __name__)
+from UserManager import UserManager
 
-database = DatabaseManager('host',
-                           'user',
-                           'password',
-                           'database')  # TODO : How to acces to DB
-user_manager = UserManager(database)
+auth_bp = Blueprint('auth', __name__)
+user_manager = UserManager()
 
 
 @auth_bp.route('/auth/login', methods=['POST'])
@@ -35,8 +32,8 @@ def login():
 @auth_bp.route('/auth/register', methods=['POST'])
 def register():
     user_request = request.get_json()
-    username = user_request.get('username')
-    password = user_request.get('password')
+    username = user_request['username']
+    password = user_request['password']
 
     is_valid = user_manager.create_user(username, password)
 

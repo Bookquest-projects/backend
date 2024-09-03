@@ -48,15 +48,15 @@ jobs:
 
       # Lancer les tests unitaires
       - name: Run unit tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit
+        run: docker run --rm -v $(pwd):/app -w /app -e PYTHONPATH=/app/bookquest bookquest-backend:latest pytest ./bookquest/tests/unit
 
       # Lancer les tests d'intégration
       - name: Run integration tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/integration
+        run: docker run --rm -v $(pwd):/app -w /app -e PYTHONPATH=/app/bookquest bookquest-backend:latest pytest ./bookquest/tests/integration
 
       # Lancer les tests E2E
       - name: Run E2E tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/e2e
+        run: docker run --rm -v $(pwd):/app -w /app -e PYTHONPATH=/app/bookquest bookquest-backend:latest pytest ./bookquest/tests/e2e
 
   # Déploiement en staging
   deploy-staging:

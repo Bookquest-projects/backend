@@ -46,22 +46,12 @@ jobs:
       - name: Build Docker image
         run: docker build -t bookquest-backend:latest -f Dockerfile .
 
-      # DEBUG
-      - name: Simple Test Command
-        run: |
-          docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest echo "Docker is working!"
-
       # Lancer les tests unitaires
       - name: Run unit tests
         run: |
           docker run --rm -v $(pwd):/app -w /app \
-          -e PYTHONPATH=/app/bookquest \
-          -e DB_USER=${{ secrets.DB_USER }} \
-          -e DB_PASS=${{ secrets.DB_PASS }} \
-          -e DB_HOST=${{ secrets.DB_HOST }} \
-          -e DB_NAME=${{ secrets.DB_NAME }} \
           bookquest-backend:latest pytest ./bookquest/tests/unit
-          
+
       # Lancer les tests d'intégration
       - name: Run integration tests
         run: |

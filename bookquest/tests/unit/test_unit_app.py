@@ -1,6 +1,6 @@
 import unittest
 
-from bookquest.app.helper import is_valid_isbn
+from app.helper import is_valid_isbn
 
 
 class SimpleTestCase(unittest.TestCase):

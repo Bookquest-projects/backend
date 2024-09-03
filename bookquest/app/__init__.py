@@ -20,23 +20,23 @@ def create_app():
     )
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
-    ## BLUEPRINTS ##
+    # BLUEPRINTS #
     from auth import auth_bp
     from books import books_bp
 
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)
 
-    ## JWT CONFIGURATION ##
+    # JWT CONFIGURATION #
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 
-    jwt = JWTManager(app)
+    JWTManager(app)
 
     return app
 
 
-## DATABASE CONFIGURATION ##
+# DATABASE CONFIGURATION #
 load_dotenv()
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("SQLSERVER_PASS")

@@ -91,3 +91,27 @@ def get_recommendations(isbn: str):
         return jsonify({"error": "Couldn't retrieve recommendations"}), 404
 
     return jsonify(recommendations), 200
+
+
+@books_bp.route('/books/authors/<string:author>', methods=['GET'])
+def get_author_books(author: str):
+    if not author:
+        return jsonify({"error": "author is required"}), 400
+
+    lang = request.args.get('lang', None)
+
+    bookRepository = BookRepository()
+    books_info = bookRepository.find_books_by_author(author, lang)
+
+    if not books_info:
+        return jsonify({"error": "Couldn't retrieve books"}), 404
+
+    return jsonify(books_info), 200
+
+
+@books_bp.route('/books/series/<string:isbn>', methods=['GET'])
+def get_series(isbn: str):
+    if not isbn:
+        return jsonify({"error": "ISBN is required"}), 400
+
+    return jsonify({"error": "Endpoint not implemented"}), 404

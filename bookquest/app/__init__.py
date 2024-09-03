@@ -8,9 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
-from .auth import auth_bp
-from .books import books_bp
-
 
 def create_app():
     load_dotenv()

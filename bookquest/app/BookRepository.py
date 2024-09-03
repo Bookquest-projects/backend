@@ -109,7 +109,8 @@ class BookRepository:
                     # Update counters
                     total_books_fetched += len(books_data["items"])
 
-                    # Break loop if fewer books were returned than requested, meaning no more books are available
+                    # Break loop if fewer books were returned than
+                    # requested, meaning no more books are available
                     if len(books_data["items"]) < max_results:
                         break
                 else:

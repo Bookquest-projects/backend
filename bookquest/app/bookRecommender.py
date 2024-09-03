@@ -47,15 +47,15 @@ class BookRecommender:
                 ].tolist()[0]
         except IndexError:
             raise ValueError(
-                f"Book with ISBN '{self.target_isbn}' not found in the fetched data.")
+                f"Book with ISBN '{self.target_isbn}' not found in the"
+                f" fetched data.")
 
         # Get similarity scores for all books
         sim_scores = list(enumerate(cosine_sim[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
         # Get the indices of the most similar books
-        sim_scores = sim_scores[
-                     1:num_recommendations + 1]  # Exclude the first entry as it's the same book
+        sim_scores = sim_scores[1:num_recommendations + 1]
         book_indices = [i[0] for i in sim_scores]
 
         return book_indices

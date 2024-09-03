@@ -10,21 +10,26 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Définit le répertoire de travail dans le conteneur
-WORKDIR /app
+WORKDIR /bookquest
 
 # Copie uniquement le fichier requirements.txt
-COPY requirements.txt /app
+COPY requirements.txt .
 
 # Installe les dépendances du projet
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copie uniquement le contenu du dossier app dans le conteneur
-COPY bookquest/app /app
+COPY bookquest/app ./app
+COPY bookquest/images ./images
+
+COPY bookquest/tests ./tests
 
 # Expose le port 5000 (par défaut pour Flask)
 EXPOSE 5000
 
 # Commande pour lancer l'application
-CMD ["python", "__init__.py"]
+CMD ["python", "app/__init__.py"]

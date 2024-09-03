@@ -27,6 +27,7 @@ class SimpleTestCase(unittest.TestCase):
         # Invalid ISBN-13
         self.assertFalse(is_valid_isbn('9782021290630'))
         self.assertFalse(is_valid_isbn('9798988013115'))
+        self.assertFalse(is_valid_isbn('9708988013115'))
         self.assertFalse(is_valid_isbn('978202129063X'))
 
 

@@ -23,7 +23,9 @@ def create_app():
     # BLUEPRINTS #
     from auth import auth_bp
     from books import books_bp
+    from bookshelf import bookshelf_bp
 
+    app.register_blueprint(bookshelf_bp)
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)
 
@@ -52,6 +54,8 @@ Base.prepare(engine)
 
 # mapped classes
 User = Base.classes.user
+Review = Base.classes.review
+Bookshelf = Base.classes.bookshelf
 
 session = Session(engine)
 

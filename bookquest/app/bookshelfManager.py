@@ -1,18 +1,29 @@
+from sqlalchemy import select
+
+
 class BookshelfManager:
 
-    def __init__(self):
+    # def get_bookshelf_by_id(self, bookshelf_id):
+    #     query = "SELECT * FROM bookshelf WHERE id_bookshelf = %s"
+    #     result = self.db_manager.execute_select(query, (bookshelf_id,))
+    #     return result
 
-    def get_bookshelf_by_id(self, bookshelf_id):
-        query = "SELECT * FROM bookshelf WHERE id_bookshelf = %s"
-        result = self.db_manager.execute_select(query, (bookshelf_id,))
-        return result
+    def get_bookshelfid_by_name(self, name:str):
+        from bookquest.app import session, Bookshelf
 
-    def get_bookshelfid_by_name(self, name):
-        query = "SELECT id_bookshelf FROM bookshelf WHERE name = %s"
-        result = self.db_manager.execute_select(query, (name,))
-        return result
+        query = select(Bookshelf.id_bookshelf).where(
+            Bookshelf.name == name)
+        result = session.execute(query)
+        bookshelf_id = result.scalars().first()
+
+        return bookshelf_id
+
 
     def get_all_bookshelf_name(self):
-        query = "SELECT name FROM bookshelf"
-        result = self.db_manager.execute_select(query)
-        return result
+        from bookquest.app import session, Bookshelf
+
+        query = select(Bookshelf.name)
+        result = session.execute(query)
+        bookshelf_names = result.scalars().all()
+
+        return bookshelf_names

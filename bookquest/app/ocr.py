@@ -117,3 +117,16 @@ class OCR:
                 return match
 
         return ""
+
+    # TODO : utiliser ça quand on enregistre un isbn10 dans la db et
+    #  qu'un isbn13 n'est pas dispo !
+    def get_isbn13_from_isbn10(self, isbn_10, prefix:str = "978"):
+        return prefix + isbn_10[:-1] + self.compute_isbn13_code(
+            prefix + isbn_10[:-1])
+
+    def compute_isbn13_code(self, isbn_13_without_code) -> str:
+        val = 0
+        for i in range(12):
+            val += int(isbn_13_without_code[i]) * (1 if i % 2 == 0 else 3)
+        r = val % 10
+        return str(r) if r == 0 else str(10 - r)

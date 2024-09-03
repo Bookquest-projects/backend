@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 
 from BookRepository import BookRepository
 from UserManager import UserManager
@@ -16,23 +16,26 @@ bookshelf_manager = BookshelfManager()
 
 @bookshelf_bp.route('/bookshelf', methods=['GET'])
 def bookshelf_name():
+    verify_jwt_in_request()
+    current_username = get_jwt_identity()
+
     if 'name' not in request.args:
         return jsonify({"error": "Bookshelf name is required"}), 400
 
     ALLOWED_NAME = bookshelf_manager.get_all_bookshelf_name()
-
+    print(ALLOWED_NAME)
     name = request.args.get('name')
+    print(name)
 
     if name not in ALLOWED_NAME:
-        print("Unsupported Bookshelf name")
+        print("Unsupported Bookshelf name: " + name)
         return jsonify({"error": "Unsupported Bookshelf name"}), 415
 
-    current_username = get_jwt_identity()
 
     user_id = user_manager.get_userid(current_username)
     bookshelf_id = bookshelf_manager.get_bookshelfid_by_name(name)
 
-    isbns_13 = review_manager.get_isbn13_by_userid_and_bookshelfid(
+    isbns_13 = review_manager.get_isbns13_by_userid_and_bookshelfid(
         user_id, bookshelf_id)
 
     book_repository = BookRepository()

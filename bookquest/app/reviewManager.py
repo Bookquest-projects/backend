@@ -1,34 +1,44 @@
+from sqlalchemy import select, or_
+
+
 class ReviewManager:
 
-    def __init__(self):
-
     def get_userid_by_reviewid(self, review_id):
-        query = "SELECT fk_user FROM review WHERE id_review = %s"
-        result = self.db_manager.execute_select(query, (review_id,))
-        return result
+        from bookquest.app import session, Review
+        user_id = session.query(Review).with_entities(
+            Review.fk_user).filter_by(id_review=review_id).first()
+        return user_id
 
     def get_reviewids_by_userid(self, user_id):
-        query = "SELECT id_review FROM review WHERE fk_user = %s"
-        result = self.db_manager.execute_select(query, (user_id,))
-        return result
+        from bookquest.app import session, Review
+        review_id = session.query(Review).with_entities(
+            Review.id_review).filter_by(fk_user=user_id)
+        return review_id
 
     def get_bookshelfids_by_userid(self, user_id):
-        query = "SELECT fk_bookshelf FROM review WHERE fk_user = %s"
-        result = self.db_manager.execute_select(query, (user_id,))
-        return result
+        from bookquest.app import session, Review
+        bookshelf_id = session.query(Review).with_entities(
+            Review.fk_bookshelf).filter_by(fk_user=user_id)
+        return bookshelf_id
 
-    def get_review_by_userid_and_bookshelfid(self,
+    def get_reviews_by_userid_and_bookshelfid(self,
+                                              user_id,
+                                              bookshelf_id):
+        from bookquest.app import session, Review
+        reviews = session.query(Review).filter_by(
+            fk_user=user_id,
+            fk_bookshelf=bookshelf_id)
+        return reviews
+
+    def get_isbns13_by_userid_and_bookshelfid(self,
                                              user_id,
                                              bookshelf_id):
-        query = "SELECT * FROM review WHERE fk_user = %s AND fk_bookshelf = %s"
-        result = self.db_manager.execute_select(query,
-                                                (user_id, bookshelf_id,))
-        return result
+        from bookquest.app import session, Review
 
-    def get_isbn13_by_userid_and_bookshelfid(self,
-                                             user_id,
-                                             bookshelf_id):
-        query = "SELECT isbn_13 FROM review WHERE fk_user = %s AND fk_bookshelf = %s"
-        result = self.db_manager.execute_select(query,
-                                                (user_id, bookshelf_id,))
-        return result
+        query = select(Review.isbn_13).where(or_(
+            Review.fk_user == user_id,
+            Review.fk_bookshelf == bookshelf_id))
+        result = session.execute(query)
+        isbns_13 = result.scalars().all()
+
+        return isbns_13

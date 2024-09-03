@@ -72,3 +72,21 @@ def scan_book():
             return jsonify({"error": "No valid ISBN in picture"}), 400
 
     return get_book_by_isbn(isbns[0])
+
+
+@books_bp.route('/books/<string:isbn>/recommendations', methods=['GET'])
+def get_recommendations(isbn: str):
+    if not isbn:
+        return jsonify({"error": "ISBN is required"}), 400
+
+    ocr = OCR()
+    if not ocr.is_valid_code(isbn):
+        return jsonify({"error": "Not a valid ISBN"}), 400
+
+    recommender = BookRecommender(isbn)
+    recommendations = recommender.generate_recommendations()
+
+    if not recommendations:
+        return jsonify({"error": "Couldn't retrieve recommendations"}), 404
+
+    return jsonify(recommendations), 200

@@ -14,7 +14,7 @@ python-dotenv==1.0.1
 mysqlclient==2.2.4 
 argon2-cffi==23.1.0 
 SQLAlchemy~=2.0.7 
-sqlalchemy-pytds=1.0.1 
+sqlalchemy-pytds==1.0.1 
 Werkzeug~=3.0.4 
 scikit-learn==1.5.1 
 pandas==2.2.2 

@@ -23,7 +23,8 @@ class BookRepository:
         average_rating = volume.get("averageRating", empty_value)
         ratings_count = volume.get("ratingsCount", empty_value)
         language = volume.get("language", empty_value)
-        image_link = (volume.get("imageLinks", {}).get("thumbnail", empty_value))
+        image_link = (
+            volume.get("imageLinks", {}).get("thumbnail", empty_value))
 
         isbn_10 = ""
         isbn_13 = ""
@@ -71,7 +72,8 @@ class BookRepository:
 
         return infos
 
-    def find_books_by_keyword_and_lang(self, keyword: str, lang: str = 'en', limit: int = 40):
+    def find_books_by_keyword_and_lang(self, keyword: str,
+                                       lang: str = 'en', limit: int = 40):
         keyword.strip()
 
         total_books_fetched = 0
@@ -85,7 +87,7 @@ class BookRepository:
             max_results = min(40, remaining_books)
 
             params = {
-                'q' : keyword,
+                'q': keyword,
                 'langRestrict': lang,
                 'maxResults': max_results,
                 'startIndex': total_books_fetched
@@ -100,7 +102,8 @@ class BookRepository:
 
                 if "items" in books_data:
                     for book in books_data["items"]:
-                        volume_info = self._extract_infos(book["volumeInfo"])
+                        volume_info = self._extract_infos(
+                            book["volumeInfo"])
                         books_info.append(volume_info)
 
                     # Update counters

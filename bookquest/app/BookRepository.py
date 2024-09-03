@@ -121,3 +121,29 @@ class BookRepository:
                 return None
 
         return books_info
+
+    def find_books_by_author(self, author: str, lang: str = None):
+        books_info = []
+
+        try:
+            params = {
+                'q': f"inauthor:{author}",
+                'langRestrict': lang,
+                'maxResults': 20,
+            }
+
+            response = requests.get(self.base_url, params=params)
+            response.raise_for_status()
+            books_data = response.json()
+
+            if "items" in books_data:
+                for book in books_data["items"]:
+                    volume_info = self._extract_infos(
+                        book["volumeInfo"])
+                    books_info.append(volume_info)
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
+
+        return books_info

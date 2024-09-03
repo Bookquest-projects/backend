@@ -17,7 +17,7 @@ class UserManager:
             return False
 
     def __is_username_taken(self, username):
-        from bookquest.app import session, User
+        from __init__ import session, User
         user = session.query(User).filter_by(username=username).first()
         return user is not None
 
@@ -27,16 +27,16 @@ class UserManager:
 
         hashed_password = self.__hash_password(password)
 
-        from bookquest.app import User
+        from __init__ import User
         user = User(username=username, password=hashed_password)
 
-        from bookquest.app import session
+        from __init__ import session
         session.add(user)
         session.commit()
         return True
 
     def verify_user(self, username, password):
-        from bookquest.app import session, User
+        from __init__ import session, User
         user = session.query(User).filter_by(username=username).first()
         if user is None:
             return False

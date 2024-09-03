@@ -44,34 +44,6 @@ class OCR:
 
         return detectedBarcodes
 
-    def is_valid_code(self, isbn: str) -> bool:
-        if len(isbn) == 10:
-            # print("length 10 ok")
-            val = 0
-            for i in range(10, 1, -1):
-                val = val + i * int(isbn[10 - i])
-            return (11 - val % 11 == 10 and isbn[
-                -1] == "X") or 11 - val % 11 == int(isbn[-1])
-        elif len(isbn) == 13:
-            # print("length 13 ok")
-            # print("begin with :", isbn[0:3])
-            if isbn[0:3] == "978" or isbn[0:3] == "979":
-                # print("concern a book")
-                val = 0
-                for i in range(12):
-                    val += int(isbn[i]) * (1 if i % 2 == 0 else 3)
-                    # print(val)
-                # print(val)
-                r = val % 10
-                return (r == 0 and r == int(isbn[12])) or 10 - r == int(
-                    isbn[12])
-            else:
-                # print("this barcode is EAN13 but doesn't concern a book")
-                return False
-        else:
-            # print("barcode not recognize as an EAN13 neither ISBN-10")
-            return False
-
     def get_text_info(self, path: str) -> str:
         reader = easyocr.Reader(['en'])
         result = reader.readtext(path)

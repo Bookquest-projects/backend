@@ -21,8 +21,8 @@ def create_app():
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
     # BLUEPRINTS #
-    from auth import auth_bp
-    from books import books_bp
+    from app.auth import auth_bp
+    from app.books import books_bp
 
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)

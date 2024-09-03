@@ -46,6 +46,11 @@ jobs:
       - name: Build Docker image
         run: docker build -t bookquest-backend:latest -f Dockerfile .
 
+      # DEBUG
+      - name: Simple Test Command
+        run: |
+          docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest echo "Docker is working!"
+
       # Lancer les tests unitaires
       - name: Run unit tests
         run: |

@@ -5,8 +5,8 @@ from flask.cli import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
-from auth import auth_bp
-from books import books_bp
+from .auth import auth_bp
+from .books import books_bp
 
 app = Flask(__name__)
 CORS(

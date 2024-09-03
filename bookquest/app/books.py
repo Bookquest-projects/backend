@@ -4,8 +4,8 @@ import cv2
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
-from BookRepository import BookRepository
-from ocr import OCR
+from .BookRepository import BookRepository
+from .ocr import OCR
 
 UPLOAD_FOLDER = '../images'  # TODO
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO

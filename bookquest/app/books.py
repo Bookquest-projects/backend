@@ -5,7 +5,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
 from .BookRepository import BookRepository
-from .helper import *
+from .helper import is_valid_isbn
 from .ocr import OCR
 
 UPLOAD_FOLDER = '../images'  # TODO

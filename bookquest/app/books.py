@@ -9,7 +9,7 @@ from app.bookRecommender import BookRecommender
 from app.helper import is_valid_isbn
 from app.ocr import OCR
 
-UPLOAD_FOLDER = '../images'  # TODO
+UPLOAD_FOLDER = 'images'
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
 
 books_bp = Blueprint('books', __name__)
@@ -17,7 +17,7 @@ books_bp = Blueprint('books', __name__)
 
 @books_bp.route('/')
 def hello_world():
-    return "Hello, World! " + str(cv2.CV_64F)
+    return "Hello, World! " + str(cv2.CV_64F + 1)
 
 
 @books_bp.route('/books/<string:isbn>', methods=['GET'])
@@ -50,6 +50,10 @@ def scan_book():
         return jsonify({"error": "Unsupported Media Type"}), 415
 
     fileName = secure_filename(file.filename)
+    # create folder if missing
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
     path = os.path.join(UPLOAD_FOLDER, fileName)
     file.save(path)
 

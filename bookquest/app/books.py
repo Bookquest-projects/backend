@@ -16,7 +16,7 @@ books_bp = Blueprint('books', __name__)
 
 @books_bp.route('/')
 def hello_world():
-    return "Hello, World! " + str(cv2.CV_64F)
+    return "Hello, World! " + str(cv2.CV_64F + 1)
 
 
 @books_bp.route('/books/<string:isbn>', methods=['GET'])

@@ -1,5 +1,6 @@
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
+from sqlalchemy import select
 
 
 class UserManager:
@@ -42,3 +43,12 @@ class UserManager:
             return False
 
         return self.__verify_password(password, user.password)
+
+    def get_userid(self, username):
+        from bookquest.app import session, User
+
+        query = select(User.id_user)
+        result = session.execute(query)
+        user_id = result.scalars().first()
+
+        return user_id

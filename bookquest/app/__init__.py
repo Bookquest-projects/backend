@@ -23,7 +23,9 @@ def create_app():
     # BLUEPRINTS #
     from auth import auth_bp
     from books import books_bp
+    from bookshelf import bookshelf_bp
 
+    app.register_blueprint(bookshelf_bp)
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)
 
@@ -46,11 +48,14 @@ DB_HOST = os.getenv("DB_HOST")
 # reflect the tables
 Base = automap_base()
 engine = create_engine(
-    "mssql+pytds://" + DB_USER + ":" + DB_PASS + "@" + DB_HOST + "/" + DB_NAME)
+    "mssql+pytds://" + DB_USER + ":" + DB_PASS + "@" +
+    DB_HOST + "/" + DB_NAME)
 Base.prepare(engine)
 
 # mapped classes
 User = Base.classes.user
+Review = Base.classes.review
+Bookshelf = Base.classes.bookshelf
 
 session = Session(engine)
 

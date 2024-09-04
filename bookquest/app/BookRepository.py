@@ -53,13 +53,23 @@ class BookRepository:
         }
         return infos
 
-    def _can_add_book(self, lang: str, volume_info: dict):
+    def _can_add_book(self, lang: str, volume_info: dict, books: list):
         # Check if the lang is matching
         if lang is not None and volume_info.get('language') != lang:
             return False
 
-        # Can add only if at least one of the isbn exist
-        return volume_info.get('isbn_10') or volume_info.get('isbn_13')
+        # Check that at least one of the isbn exist
+        if volume_info.get('isbn_13'):
+            new_isbn = volume_info.get('isbn_13')
+            books_set = set(book.get('isbn_13') for book in books)
+        elif volume_info.get('isbn_10'):
+            new_isbn = volume_info.get('isbn_10')
+            books_set = set(book.get('isbn_10') for book in books)
+        else:
+            return False
+
+        # Check that the book isn't already in the list
+        return new_isbn not in books_set
 
     def findBookByIsbn(self, isbn: str):
         api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
@@ -117,7 +127,7 @@ class BookRepository:
                     # Add only books with an ISBN and a valid lang
                     #   Unfortunately, Google Books API seems to have
                     #   problems with the 'langRestrict' param ...
-                    if self._can_add_book(lang, volume_info):
+                    if self._can_add_book(lang, volume_info, books_info):
                         books_info.append(volume_info)
 
                         if len(books_info) == limit:
@@ -172,7 +182,7 @@ class BookRepository:
                     # Add only books with matching lang and an ISBN
                     #   Unfortunately, Google Books API seems to have
                     #   problems with the 'langRestrict' param ...
-                    if self._can_add_book(lang, volume_info):
+                    if self._can_add_book(lang, volume_info, books_info):
                         books_info.append(volume_info)
 
                         if len(books_info) == limit:

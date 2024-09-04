@@ -48,7 +48,7 @@ DB_HOST = os.getenv("DB_HOST")
 # reflect the tables
 Base = automap_base()
 engine = create_engine(
-    f"mssql+pytds://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+    f"mssql+pytds://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}?instance=database-v001"
 )
 Base.prepare(engine)
 

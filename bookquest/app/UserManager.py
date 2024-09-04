@@ -23,7 +23,7 @@ class UserManager:
 
     def create_user(self, username, password):
         if self.__is_username_taken(username):
-            raise ValueError("Username already used.")
+            return False
 
         hashed_password = self.__hash_password(password)
 

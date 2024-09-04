@@ -45,7 +45,7 @@ class UserManager:
         return self.__verify_password(password, user.password)
 
     def get_userid(self, username):
-        from bookquest.app import session, User
+        from app import session, User
 
         query = select(User.id_user)
         result = session.execute(query)

@@ -17,7 +17,7 @@ class BookshelfManager:
         bookshelf_id = result.scalars().first()
 
         return bookshelf_id
-    
+
     def get_all_bookshelf_name(self):
         from __init__ import session, Bookshelf
 

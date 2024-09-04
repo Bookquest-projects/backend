@@ -15,19 +15,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /backend
 
 # Copie uniquement le fichier requirements.txt
-COPY requirements.txt /app
+COPY requirements.txt .
 
 # Installe les dépendances du projet
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copie uniquement le contenu du dossier app dans le conteneur
-<<<<<<< HEAD
-COPY bookquest/app /app
-COPY bookquest/tests /app
-=======
 COPY bookquest/app ./bookquest/app
 COPY bookquest/tests ./bookquest/tests
->>>>>>> d17d4fde3b7ebd1ad5205da22745ade972d44ca3
 
 # Expose le port 5000 (par défaut pour Flask)
 EXPOSE 5000

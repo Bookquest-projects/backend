@@ -4,10 +4,9 @@ import cv2
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 
-from app.BookRepository import BookRepository
-from app.bookRecommender import BookRecommender
-from app.helper import is_valid_isbn
-from app.ocr import OCR
+from BookRepository import BookRepository
+from bookRecommender import BookRecommender
+from ocr import OCR
 
 UPLOAD_FOLDER = 'images'
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
@@ -28,7 +27,7 @@ def get_book_by_isbn(isbn: str):
     ocr = OCR()
     isbn_cleaned = ocr.clean_isbn(isbn)
     bookRepository = BookRepository()
-    if is_valid_isbn(isbn_cleaned):
+    if ocr.is_valid_code(isbn_cleaned):
         book_info = bookRepository.findBookByIsbn(isbn_cleaned)
         if not book_info:
             return jsonify({"error": "Book not found"}), 404
@@ -66,12 +65,12 @@ def scan_book():
         if len(txt) == 0:
             return jsonify({"error": "No isbn found in image"}), 404
         isbn = ocr.clean_isbn(txt)
-        if is_valid_isbn(isbn):
+        if ocr.is_valid_code(isbn):
             isbns.append(isbn)
     else:
         for i in range(len(barcodes)):
             isbn = ocr.clean_isbn(barcodes[0].data.decode())
-            if is_valid_isbn(isbn):
+            if ocr.is_valid_code(isbn):
                 isbns.append(isbn)
 
         if len(isbns) == 0:

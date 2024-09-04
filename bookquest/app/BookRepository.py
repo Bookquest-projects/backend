@@ -53,6 +53,14 @@ class BookRepository:
         }
         return infos
 
+    def _can_add_book(self, lang: str, volume_info: dict):
+        # Check if the lang is matching
+        if lang != None and volume_info.get('language') != lang:
+            return False
+
+        # Can add only if at least one of the isbn exist
+        return volume_info.get('isbn_10') or volume_info.get('isbn_13')
+
     def findBookByIsbn(self, isbn: str):
         api = "https://www.googleapis.com/books/v1/volumes?q=isbn:"
         isbn.strip()
@@ -73,7 +81,7 @@ class BookRepository:
         return infos
 
     def find_books_by_keyword_and_lang(self, keyword: str,
-                                       lang: str = 'en', limit: int = 40):
+                                       lang: str = None, limit: int = 40):
         keyword.strip()
 
         total_books_fetched = 0
@@ -81,7 +89,8 @@ class BookRepository:
 
         while total_books_fetched < limit:
             # Calculate remaining books to fetch
-            remaining_books = limit - total_books_fetched
+            # based on the number of valid books fetched
+            remaining_books = limit - len(books_info)
 
             # Set the max results for this request
             max_results = min(40, remaining_books)
@@ -93,27 +102,33 @@ class BookRepository:
                 'startIndex': total_books_fetched
             }
 
-            print(params)
-
             try:
                 response = requests.get(self.base_url, params=params)
                 response.raise_for_status()  # Vérifier les erreurs
                 books_data = response.json()
 
-                if "items" in books_data:
-                    for book in books_data["items"]:
-                        volume_info = self._extract_infos(
-                            book["volumeInfo"])
+                if not "items" in books_data:
+                    break
+
+                for book in books_data["items"]:
+                    volume_info = self._extract_infos(
+                        book["volumeInfo"])
+
+                    # Add only books with an ISBN and a valid lang
+                    #   Unfortunately, Google Books API seems to have
+                    #   problems with the 'langRestrict' param ...
+                    if self._can_add_book(lang, volume_info):
                         books_info.append(volume_info)
 
-                    # Update counters
-                    total_books_fetched += len(books_data["items"])
+                        if len(books_info) == limit:
+                            break
 
-                    # Break loop if fewer books were returned than
-                    # requested, meaning no more books are available
-                    if len(books_data["items"]) < max_results:
-                        break
-                else:
+                # Update counters
+                total_books_fetched += len(books_data["items"])
+
+                # Break loop if fewer books were returned than
+                # requested, meaning no more books are available
+                if len(books_data["items"]) < max_results:
                     break
 
             except Exception as e:
@@ -123,27 +138,56 @@ class BookRepository:
         return books_info
 
     def find_books_by_author(self, author: str, lang: str = None):
+        total_books_fetched = 0
         books_info = []
+        limit = 20
 
-        try:
+        while total_books_fetched < limit:
+            # Calculate remaining books to fetch,
+            # based on the number of valid books fetched
+            remaining_books = limit - len(books_info)
+
+            # Set the max results for this request
+            max_results = min(40, remaining_books)
+
             params = {
                 'q': f"inauthor:{author}",
                 'langRestrict': lang,
-                'maxResults': 20,
+                'maxResults': 40,
             }
 
-            response = requests.get(self.base_url, params=params)
-            response.raise_for_status()
-            books_data = response.json()
+            try:
 
-            if "items" in books_data:
+                response = requests.get(self.base_url, params=params)
+                response.raise_for_status()
+                books_data = response.json()
+
+                if not "items" in books_data:
+                    break
+
                 for book in books_data["items"]:
                     volume_info = self._extract_infos(
                         book["volumeInfo"])
-                    books_info.append(volume_info)
 
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None
+                    # Add only books with matching lang and an ISBN
+                    #   Unfortunately, Google Books API seems to have
+                    #   problems with the 'langRestrict' param ...
+                    if self._can_add_book(lang, volume_info):
+                        books_info.append(volume_info)
+
+                        if len(books_info) == limit:
+                            break
+
+                # Update counters
+                total_books_fetched += len(books_data["items"])
+
+                # Break loop if fewer books were returned than
+                # requested, meaning no more books are available
+                if len(books_data["items"]) < max_results:
+                    break
+
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                return None
 
         return books_info

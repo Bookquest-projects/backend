@@ -51,7 +51,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest bookquest\tests\unit\test_unit_app.py -v -s
+          pytest bookquest/tests/unit/test_unit_app.py -v -s
 
       - name: Install Docker
         run: |

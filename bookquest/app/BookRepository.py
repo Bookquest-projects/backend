@@ -55,7 +55,7 @@ class BookRepository:
 
     def _can_add_book(self, lang: str, volume_info: dict):
         # Check if the lang is matching
-        if lang != None and volume_info.get('language') != lang:
+        if lang is not None and volume_info.get('language') != lang:
             return False
 
         # Can add only if at least one of the isbn exist
@@ -107,7 +107,7 @@ class BookRepository:
                 response.raise_for_status()  # Vérifier les erreurs
                 books_data = response.json()
 
-                if not "items" in books_data:
+                if "items" not in books_data:
                     break
 
                 for book in books_data["items"]:
@@ -162,7 +162,7 @@ class BookRepository:
                 response.raise_for_status()
                 books_data = response.json()
 
-                if not "items" in books_data:
+                if "items" not in books_data:
                     break
 
                 for book in books_data["items"]:

@@ -45,11 +45,7 @@ class UserManager:
         return self.__verify_password(password, user.password)
 
     def get_userid(self, username):
-<<<<<<< HEAD
-        from app import session, User
-=======
         from __init__ import session, User
->>>>>>> 7bc82fe7094c6b873f3cfa0d5ae307ddcdc84b05
 
         query = select(User.id_user).where(User.username == username)
         result = session.execute(query)

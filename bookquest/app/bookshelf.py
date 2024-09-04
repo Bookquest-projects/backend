@@ -31,7 +31,6 @@ def bookshelf_name():
         print("Unsupported Bookshelf name: " + name)
         return jsonify({"error": "Unsupported Bookshelf name"}), 415
 
-
     user_id = user_manager.get_userid(current_username)
     bookshelf_id = bookshelf_manager.get_bookshelfid_by_name(name)
 

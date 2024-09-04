@@ -22,6 +22,17 @@ jobs:
           pip install flake8
           flake8 bookquest/app --exclude=venv
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+          pkg-config \
+          libzbar0 \
+          libgl1 \
+          libglib2.0-0 \
+          default-libmysqlclient-dev \
+          gcc \
+          && sudo rm -rf /var/lib/apt/lists/*
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt

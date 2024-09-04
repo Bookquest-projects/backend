@@ -120,7 +120,7 @@ class OCR:
 
     # TODO : utiliser ça quand on enregistre un isbn10 dans la db et
     #  qu'un isbn13 n'est pas dispo !
-    def get_isbn13_from_isbn10(self, isbn_10, prefix:str = "978"):
+    def get_isbn13_from_isbn10(self, isbn_10, prefix: str = "978"):
         return prefix + isbn_10[:-1] + self.compute_isbn13_code(
             prefix + isbn_10[:-1])
 

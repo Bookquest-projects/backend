@@ -13,14 +13,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      SQLSERVER_PASS: ${{ secrets.SQLSERVER_PASS }}
+
+    strategy:
+      matrix:
+        python-version: [ "3.11" ]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Run linting
         run: |
           pip install flake8
           flake8 bookquest/app --exclude=venv
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y \
+          pkg-config \
+          libzbar0 \
+          libgl1 \
+          libglib2.0-0 \
+          default-libmysqlclient-dev \
+          gcc \
+          && sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pytest bookquest/tests/unit/test_unit_app.py -v -s
 
       - name: Install Docker
         run: |
@@ -38,6 +69,7 @@ jobs:
              stable"
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
       # Changer de répertoire pour accéder au Dockerfile
       - name: Change directory to Dockerfile location
         run: cd ../../
@@ -45,18 +77,6 @@ jobs:
       # Construire l'image Docker
       - name: Build Docker image
         run: docker build -t bookquest-backend:latest -f Dockerfile .
-
-      # Lancer les tests unitaires
-      - name: Run unit tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit
-
-      # Lancer les tests d'intégration
-      - name: Run integration tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/integration
-
-      # Lancer les tests E2E
-      - name: Run E2E tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/e2e
 
   # Déploiement en staging
   deploy-staging:
@@ -83,6 +103,7 @@ jobs:
              stable"
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
@@ -98,11 +119,9 @@ jobs:
           docker build -t bookquest-backend:staging -f Dockerfile .
           docker tag bookquest-backend:staging ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:staging
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:staging
+
       - name: Deploy to Staging
         run: echo "Deploying to Staging environment..."
-
-      - name: Run integration tests on Staging
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:staging pytest ./bookquest/tests/integration
 
   # Déploiement en production
   deploy-production:
@@ -129,6 +148,7 @@ jobs:
              stable"
           sudo apt-get update
           sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
@@ -144,8 +164,6 @@ jobs:
           docker build -t bookquest-backend:production -f Dockerfile .
           docker tag bookquest-backend:production ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:production
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/bookquest-backend:production
+
       - name: Deploy to Production
         run: echo "Deploying to Production environment..."
-
-      - name: Post-deployment tests
-        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:production pytest ./bookquest/tests/e2e

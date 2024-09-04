@@ -3,7 +3,6 @@ from sqlalchemy import select, and_
 
 class ReviewManager:
 
-
     def get_userid_by_reviewid(self, review_id):
         from __init__ import session, Review
         user_id = session.query(Review).with_entities(

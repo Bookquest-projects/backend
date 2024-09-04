@@ -1,11 +1,10 @@
 import unittest
 
-from app.helper import is_valid_isbn
-
 
 class SimpleTestCase(unittest.TestCase):
     def test_is_valid_code(self):
         """Teste the is_valid_code function"""
+        from app.helper import is_valid_isbn
         # Invalid length
         self.assertFalse(is_valid_isbn('034297719'))
         self.assertFalse(is_valid_isbn('978202129063'))

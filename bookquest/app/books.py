@@ -8,7 +8,7 @@ from BookRepository import BookRepository
 from bookRecommender import BookRecommender
 from ocr import OCR
 
-UPLOAD_FOLDER = '../images'  # TODO
+UPLOAD_FOLDER = 'images'
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
 
 books_bp = Blueprint('books', __name__)
@@ -49,6 +49,10 @@ def scan_book():
         return jsonify({"error": "Unsupported Media Type"}), 415
 
     fileName = secure_filename(file.filename)
+    # create folder if missing
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
     path = os.path.join(UPLOAD_FOLDER, fileName)
     file.save(path)
 

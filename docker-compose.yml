@@ -1,0 +1,21 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
+    environment:
+      - DEBUG=${DEBUG?:err}
+      - SECRET_KEY=${SECRET_KEY?:err}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY?:err}
+      - DB_USER=${DB_USER?:err}
+      - DB_NAME=${DB_NAME?:err}
+      - SQLSERVER_PASS=${SQLSERVER_PASS?:err}
+      - DB_PORT=${DB_PORT?:err}
+      - DB_HOST=${DB_HOST?:err}
+      - DEBUG=${DEBUG?:err}
+      - ORIGIN=${ORIGIN?:err}

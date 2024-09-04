@@ -24,10 +24,12 @@ def create_app():
     from auth import auth_bp
     from books import books_bp
     from bookshelf import bookshelf_bp
+    from review import review_bp
 
     app.register_blueprint(bookshelf_bp)
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(review_bp)
 
     # JWT CONFIGURATION #
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")

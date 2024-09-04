@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r bookquest/app/requirements.txt
+          pip install -r bookquest/requirements.txt
 
       - name: Run unit tests
         run: |

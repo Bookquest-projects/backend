@@ -1,4 +1,4 @@
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, and_
 
 
 class ReviewManager:
@@ -35,7 +35,7 @@ class ReviewManager:
                                              bookshelf_id):
         from bookquest.app import session, Review
 
-        query = select(Review.isbn_13).where(or_(
+        query = select(Review.isbn_13).where(and_(
             Review.fk_user == user_id,
             Review.fk_bookshelf == bookshelf_id))
         result = session.execute(query)

@@ -48,14 +48,7 @@ jobs:
 
       # Lancer les tests unitaires
       - name: Run unit tests
-        run: docker run --rm -v $(pwd):/app -w /app/bookquest \
-              -e PYTHONPATH=/app/bookquest \
-              -e DB_USER=myuser \
-              -e DB_PASS=mypass \
-              -e DB_HOST=localhost \
-              -e DB_NAME=mydatabase \
-              bookquest-backend:latest pytest ./tests/unit
-
+        run: docker run --rm -v $(pwd):/app -w /app bookquest-backend:latest pytest ./bookquest/tests/unit
 
       # Lancer les tests d'intégration
       - name: Run integration tests

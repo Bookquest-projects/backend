@@ -9,7 +9,7 @@ class BookshelfManager:
     #     return result
 
     def get_bookshelfid_by_name(self, name:str):
-        from bookquest.app import session, Bookshelf
+        from __init__ import session, Bookshelf
 
         query = select(Bookshelf.id_bookshelf).where(
             Bookshelf.name == name)
@@ -20,7 +20,7 @@ class BookshelfManager:
 
 
     def get_all_bookshelf_name(self):
-        from bookquest.app import session, Bookshelf
+        from __init__ import session, Bookshelf
 
         query = select(Bookshelf.name)
         result = session.execute(query)

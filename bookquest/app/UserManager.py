@@ -46,7 +46,7 @@ class UserManager:
     def get_userid(self, username):
         from __init__ import session, User
 
-        query = select(User.id_user).where(User.username==username)
+        query = select(User.id_user).where(User.username == username)
         result = session.execute(query)
         user_id = result.scalars().first()
 

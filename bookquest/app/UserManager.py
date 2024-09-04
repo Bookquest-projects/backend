@@ -52,3 +52,4 @@ class UserManager:
         user_id = result.scalars().first()
 
         return user_id
+    

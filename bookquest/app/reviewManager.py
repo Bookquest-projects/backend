@@ -86,6 +86,7 @@ class ReviewManager:
 
         # Commit the transaction to save the review in the database
         session.commit()
+        return True
 
     def get_userid_by_reviewid(self, review_id):
         from __init__ import session, Review

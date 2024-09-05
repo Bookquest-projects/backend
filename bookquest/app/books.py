@@ -73,8 +73,8 @@ def scan_book():
             if is_valid_isbn(isbn):
                 isbns.append(isbn)
 
-        if len(isbns) == 0:
-            return jsonify({"error": "No valid ISBN in picture"}), 400
+    if len(isbns) == 0:
+        return jsonify({"error": "No valid ISBN in picture"}), 400
 
     return get_book_by_isbn(isbns[0])
 

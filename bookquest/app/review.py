@@ -2,8 +2,8 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from UserManager import UserManager
-from helper import is_valid_isbn
 from bookshelfManager import BookshelfManager
+from helper import is_valid_isbn
 from reviewManager import ReviewManager
 
 review_bp = Blueprint('reviews', __name__)
@@ -83,7 +83,7 @@ def add_to_bookshelf(isbn: str):
         success = review_manager.update_review(review, updates)
 
     if not success:
-        return jsonify({"error": "Error while saving the review"}), 404
+        return jsonify({"error": "Error while saving the review"}), 400
     return jsonify(), 200
 
 
@@ -115,7 +115,7 @@ def add_to_favorite(isbn: str):
         success = review_manager.update_review(review, updates)
 
     if not success:
-        return jsonify({"error": "Error while saving the review"}), 404
+        return jsonify({"error": "Error while saving the review"}), 400
     return jsonify(), 200
 
 
@@ -147,5 +147,5 @@ def add_to_owned(isbn: str):
         success = review_manager.update_review(review, updates)
 
     if not success:
-        return jsonify({"error": "Error while saving the review"}), 404
+        return jsonify({"error": "Error while saving the review"}), 400
     return jsonify(), 200

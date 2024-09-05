@@ -2,7 +2,7 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from UserManager import UserManager
-from ocr import OCR
+from helper import is_valid_isbn
 from bookshelfManager import BookshelfManager
 from reviewManager import ReviewManager
 
@@ -19,8 +19,7 @@ def get_review(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    ocr = OCR()
-    if not ocr.is_valid_code(isbn):
+    if not is_valid_isbn(isbn):
         return jsonify({"error": "ISBN is not valid"}), 400
 
     current_username = get_jwt_identity()
@@ -61,8 +60,7 @@ def add_to_bookshelf(isbn: str):
     if not bookshelf_name:
         return jsonify({"error": "Bookshelf name is required"}), 400
 
-    ocr = OCR()
-    if not ocr.is_valid_code(isbn):
+    if not is_valid_isbn(isbn):
         return jsonify({"error": "ISBN is not valid"}), 400
 
     current_username = get_jwt_identity()
@@ -96,8 +94,7 @@ def add_to_favorite(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    ocr = OCR()
-    if not ocr.is_valid_code(isbn):
+    if not is_valid_isbn(isbn):
         return jsonify({"error": "ISBN is not valid"}), 400
 
     current_username = get_jwt_identity()
@@ -129,8 +126,7 @@ def add_to_owned(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    ocr = OCR()
-    if not ocr.is_valid_code(isbn):
+    if not is_valid_isbn(isbn):
         return jsonify({"error": "ISBN is not valid"}), 400
 
     current_username = get_jwt_identity()

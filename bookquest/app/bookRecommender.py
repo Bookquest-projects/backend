@@ -1,7 +1,7 @@
+import langid
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import pandas as pd
-import langid
 
 from BookRepository import BookRepository
 
@@ -64,11 +64,12 @@ class BookRecommender:
         # Fetch the target book
         book_repository = BookRepository()
         target_book = book_repository.findBookByIsbn(self.target_isbn)
-        target_category = target_book.get("categories")[0]
-        target_language = target_book.get("languages")
-
+        target_category = target_book.get("categories")
         if not target_category:
             return None
+
+        target_category = target_category[0]
+        target_language = target_book.get("languages")
 
         # Try to detect the lang if none is returned by the API
         if not target_language and target_book.get("description"):

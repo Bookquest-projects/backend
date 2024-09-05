@@ -10,40 +10,46 @@ user_manager = UserManager()
 
 @auth_bp.route('/auth/login', methods=['POST'])
 def login():
-    user_request = request.get_json()
-    username = user_request.get('username')
-    password = user_request.get('password')
+    try:
+        user_request = request.get_json()
+        username = user_request.get('username')
+        password = user_request.get('password')
 
-    is_valid = user_manager.verify_user(username, password)
+        is_valid = user_manager.verify_user(username, password)
 
-    if not is_valid:
-        return jsonify({"msg": "Invalid user"}), 403
-    else:
-        access_token = create_access_token(identity=username)
-        refresh_token = create_access_token(identity=username)
-        response = jsonify()
-        set_access_cookies(response, access_token)
-        set_refresh_cookies(response, refresh_token)
-        return response, 201
+        if not is_valid:
+            return jsonify({"msg": "Invalid user"}), 403
+        else:
+            access_token = create_access_token(identity=username)
+            refresh_token = create_access_token(identity=username)
+            response = jsonify()
+            set_access_cookies(response, access_token)
+            set_refresh_cookies(response, refresh_token)
+            return response, 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @auth_bp.route('/auth/register', methods=['POST'])
 def register():
-    user_request = request.get_json()
-    username = user_request['username']
-    password = user_request['password']
+    try:
+        user_request = request.get_json()
+        username = user_request['username']
+        password = user_request['password']
 
-    is_valid = user_manager.create_user(username, password)
+        is_valid = user_manager.create_user(username, password)
 
-    if not is_valid:
-        return jsonify({"msg": "User already exists"}), 409
-    else:
-        access_token = create_access_token(identity=username)
-        refresh_token = create_access_token(identity=username)
-        response = jsonify()
-        set_access_cookies(response, access_token)
-        set_refresh_cookies(response, refresh_token)
-        return response, 201
+        if not is_valid:
+            return jsonify({"msg": "User already exists"}), 409
+        else:
+            access_token = create_access_token(identity=username)
+            refresh_token = create_access_token(identity=username)
+            response = jsonify()
+            set_access_cookies(response, access_token)
+            set_refresh_cookies(response, refresh_token)
+            return response, 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @auth_bp.route('/auth/logout', methods=['POST'])

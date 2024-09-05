@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 
 from BookRepository import BookRepository
 from bookRecommender import BookRecommender
+from helper import is_valid_isbn, clean_isbn
 from ocr import OCR
 from helper import is_valid_isbn, clean_isbn
 
@@ -73,8 +74,8 @@ def scan_book():
             if is_valid_isbn(isbn):
                 isbns.append(isbn)
 
-        if len(isbns) == 0:
-            return jsonify({"error": "No valid ISBN in picture"}), 400
+    if len(isbns) == 0:
+        return jsonify({"error": "No valid ISBN in picture"}), 400
 
     return get_book_by_isbn(isbns[0])
 

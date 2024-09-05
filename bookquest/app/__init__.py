@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from flask import Flask
 from flask.cli import load_dotenv
@@ -24,14 +25,18 @@ def create_app():
     from auth import auth_bp
     from books import books_bp
     from bookshelf import bookshelf_bp
+    from review import review_bp
 
     app.register_blueprint(bookshelf_bp)
     app.register_blueprint(books_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(review_bp)
 
     # JWT CONFIGURATION #
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
     JWTManager(app)
 

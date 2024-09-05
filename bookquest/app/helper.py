@@ -27,3 +27,15 @@ def is_valid_isbn(isbn):
             return False
         return _validate_isbn13(isbn)
     return False
+
+def clean_isbn(isbn: str, chars_to_remove=None) -> str:
+    if chars_to_remove is None:
+        chars_to_remove = list()
+
+    if len(chars_to_remove) == 0:
+        chars_to_remove = ['-', ' ']
+
+    isbn_cleaned = '%s' % isbn
+    for c in chars_to_remove:
+        isbn_cleaned = isbn_cleaned.replace(c, '')
+    return isbn_cleaned

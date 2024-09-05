@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from BookRepository import BookRepository
 from bookRecommender import BookRecommender
 from ocr import OCR
+from helper import is_valid_isbn, clean_isbn
 
 UPLOAD_FOLDER = 'images'
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO
@@ -24,10 +25,9 @@ def get_book_by_isbn(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    ocr = OCR()
-    isbn_cleaned = ocr.clean_isbn(isbn)
+    isbn_cleaned = clean_isbn(isbn)
     bookRepository = BookRepository()
-    if ocr.is_valid_code(isbn_cleaned):
+    if is_valid_isbn(isbn_cleaned):
         book_info = bookRepository.findBookByIsbn(isbn_cleaned)
         if not book_info:
             return jsonify({"error": "Book not found"}), 404
@@ -64,13 +64,13 @@ def scan_book():
         txt = ocr.get_text_info(path)
         if len(txt) == 0:
             return jsonify({"error": "No isbn found in image"}), 404
-        isbn = ocr.clean_isbn(txt)
-        if ocr.is_valid_code(isbn):
+        isbn = clean_isbn(txt)
+        if is_valid_isbn(isbn):
             isbns.append(isbn)
     else:
         for i in range(len(barcodes)):
-            isbn = ocr.clean_isbn(barcodes[0].data.decode())
-            if ocr.is_valid_code(isbn):
+            isbn = clean_isbn(barcodes[0].data.decode())
+            if is_valid_isbn(isbn):
                 isbns.append(isbn)
 
         if len(isbns) == 0:
@@ -85,7 +85,7 @@ def get_recommendations(isbn: str):
         return jsonify({"error": "ISBN is required"}), 400
 
     ocr = OCR()
-    if not ocr.is_valid_code(isbn):
+    if not is_valid_isbn(isbn):
         return jsonify({"error": "Not a valid ISBN"}), 400
 
     recommender = BookRecommender(isbn)

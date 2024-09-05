@@ -50,13 +50,14 @@ def get_review(isbn: str):
 
 
 # TODO : Refactor to have a function with duplicated code!
-@review_bp.route('/reviews/<string:isbn>/bookshelf', methods=['GET'])
+@review_bp.route('/reviews/<string:isbn>/bookshelf', methods=['POST'])
 @jwt_required()
 def add_to_bookshelf(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    bookshelf_name = request.args.get('name', None)
+    data = request.get_json()
+    bookshelf_name = data['name']
     if not bookshelf_name:
         return jsonify({"error": "Bookshelf name is required"}), 400
 
@@ -76,10 +77,10 @@ def add_to_bookshelf(isbn: str):
 
     review = review_manager.get_first_review(params)
     if not review:
-        params['bookshelf'] = bookshelf_id
+        params['fk_bookshelf'] = bookshelf_id
         success = review_manager.insert_review(params)
     else:
-        updates = {'bookshelf': bookshelf_id}
+        updates = {'fk_bookshelf': bookshelf_id}
         success = review_manager.update_review(review, updates)
 
     if not success:

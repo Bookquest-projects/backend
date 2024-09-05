@@ -84,7 +84,6 @@ def get_recommendations(isbn: str):
     if not isbn:
         return jsonify({"error": "ISBN is required"}), 400
 
-    ocr = OCR()
     if not is_valid_isbn(isbn):
         return jsonify({"error": "Not a valid ISBN"}), 400
 

@@ -8,7 +8,6 @@ from BookRepository import BookRepository
 from bookRecommender import BookRecommender
 from helper import is_valid_isbn, clean_isbn
 from ocr import OCR
-from helper import is_valid_isbn, clean_isbn
 
 UPLOAD_FOLDER = 'images'
 ALLOWED_EXTENSIONS = {'image/png', 'image/jpg', 'image/jpeg'}  # TODO

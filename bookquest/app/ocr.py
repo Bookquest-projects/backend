@@ -6,7 +6,6 @@ from pyzbar.pyzbar import decode
 
 regex_13 = r'9(?:[ -]*7)(?:[ -]*[89])(?:[ -]*\d){10}'
 regex_10 = r'\d(?:[ -]*\d){8}(?:[ -]*[\dX])'
-unwanted_chars_default = ['-', ' ']
 
 
 class OCR:
@@ -16,18 +15,6 @@ class OCR:
 
     def imread(self, path: str):
         return cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-
-    def clean_isbn(self, isbn: str,
-                   chars_to_remove=None) -> str:
-        if chars_to_remove is None:
-            chars_to_remove = list()
-        if len(chars_to_remove) == 0:
-            chars_to_remove = unwanted_chars_default.copy()
-
-        isbn_cleaned = '%s' % isbn
-        for c in chars_to_remove:
-            isbn_cleaned = isbn_cleaned.replace(c, '')
-        return isbn_cleaned
 
     def get_bar_code_info(self, img_cv2):
         detectedBarcodes = decode(img_cv2)

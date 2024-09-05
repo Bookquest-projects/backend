@@ -31,7 +31,7 @@ def get_review(isbn: str):
         "fk_user": user_id,
     }
 
-    review = review_manager.get_review(params)
+    review = review_manager.get_first_review(params)
     if not review:
         return jsonify({"error": "Review not found"}), 404
 
@@ -74,7 +74,7 @@ def add_to_bookshelf(isbn: str):
         "fk_user": user_id,
     }
 
-    review = review_manager.get_review(params)
+    review = review_manager.get_first_review(params)
     if not review:
         params['bookshelf'] = bookshelf_id
         success = review_manager.insert_review(params)
@@ -106,7 +106,7 @@ def add_to_favorite(isbn: str):
         "fk_user": user_id,
     }
 
-    review = review_manager.get_review(params)
+    review = review_manager.get_first_review(params)
     if not review:
         params['favorite'] = True
         success = review_manager.insert_review(params)
@@ -138,7 +138,7 @@ def add_to_owned(isbn: str):
         "fk_user": user_id,
     }
 
-    review = review_manager.get_review(params)
+    review = review_manager.get_first_review(params)
     if not review:
         params['owned'] = True
         success = review_manager.insert_review(params)

@@ -19,34 +19,43 @@ book_repository = BookRepository()
 def bookshelf_name():
     try:
         current_username = get_jwt_identity()
+        user_id = user_manager.get_userid(current_username)
 
-        if 'name' not in request.args:
-            return jsonify({"error": "Bookshelf name is required"}), 400
+        books = {}
 
-        name = request.args.get('name')
-        if name in ['favorite', 'owned']:
-            user_id = user_manager.get_userid(current_username)
-            params = {
-                "fk_user": user_id,
-                name: True
-            }
-        else:
-            allowed_name = bookshelf_manager.is_bookshelf_name_allowed(name)
-            if not allowed_name:
-                return jsonify({"error": "Unsupported Bookshelf name"}), 415
-
-            user_id = user_manager.get_userid(current_username)
-            bookshelf_id = bookshelf_manager.get_bookshelfid_by_name(name)
+        # Add all books for the bookshelfs
+        bookshelf_names = bookshelf_manager.get_all_bookshelf_name()
+        for bookshelf in bookshelf_names:
+            bookshelf_id = bookshelf_manager.get_bookshelfid_by_name(
+                bookshelf)
             params = {
                 "fk_user": user_id,
                 "fk_bookshelf": bookshelf_id
             }
 
-        reviews = review_manager.get_review(params)
+            reviews = review_manager.get_all_reviews(params)
+            shelf_books = []
+            for review in reviews:
+                shelf_books.append(
+                    book_repository.findBookByIsbn(review.isbn_13))
 
-        books = []
-        for review in reviews:
-            books.append(book_repository.findBookByIsbn(review.isbn_13))
+            books[bookshelf] = shelf_books
+
+        # Add the favorite and owned books
+        names = ['favorite', 'owned']
+        for name in names:
+            params = {
+                "fk_user": user_id,
+                name: True
+            }
+
+            reviews = review_manager.get_all_reviews(params)
+            shelf_books = []
+            for review in reviews:
+                shelf_books.append(
+                    book_repository.findBookByIsbn(review.isbn_13))
+
+            books[name] = shelf_books
 
         return jsonify(books), 200
 

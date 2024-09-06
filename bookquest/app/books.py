@@ -60,8 +60,8 @@ def scan_book():
     barcodes = ocr.get_bar_code_info(ocr.imread(path))
 
     isbns: list[str] = []
-    if not barcodes:
-        txt = ocr.get_text_info(path)
+    txt = ocr.get_text_info(path)
+    if not barcodes:
         if len(txt) == 0:
             return jsonify({"error": "No isbn found in image"}), 404
         isbn = clean_isbn(txt)
@@ -72,6 +72,10 @@ def scan_book():
             isbn = clean_isbn(barcodes[0].data.decode())
             if is_valid_isbn(isbn):
                 isbns.append(isbn)
+   
+    isbn = clean_isbn(txt)
+    if is_valid_isbn(isbn):
+        isbns.append(isbn)
 
     if len(isbns) == 0:
         return jsonify({"error": "No valid ISBN in picture"}), 400
